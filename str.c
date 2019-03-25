@@ -27,8 +27,19 @@ size_t StrGetLength(const char* pcSrc)
 char *StrCopy(char *pcDest, const char* pcSrc)
 {
   /* TODO: fill this function */
+	int i;
+	char *pcStart;
+	const char *pcEnd;
+	assert(pcEnd);
+	pcStart = pcDest;
+
+	for(i = 0; i < StrGetLength(pcSrc); i++){
+		*pcStart = *pcSrc;
+		pcStart++;
+		pcSrc++;
+	}
   
-  return strcpy(pcDest, pcSrc);
+  return pcDest;
 }
 
 /*------------------------------------------------------------------------*/
