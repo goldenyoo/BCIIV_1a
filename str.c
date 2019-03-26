@@ -46,9 +46,25 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 int StrCompare(const char* pcS1, const char* pcS2)
 {
   /* TODO: fill this function */
+	const char* pcOne;
+	const char* pcSec;
+	
+	pcOne = pcS1;
+	pcSec = pcS2;
+
+	while(*pcOne && *pcSec){
+		if(*pcOne == *pcSec ){
+			*pcOne++;
+			*pcSec++;
+		}
+		else{
+			return *pcOne - *pcSec;
+		}
+	}
  
-  return strcmp(pcS1, pcS2);
+  return *pcOne - *pcSec;
 }
+
 /*------------------------------------------------------------------------*/
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
