@@ -1,6 +1,6 @@
 #include <assert.h> /* to use assert() */
 #include <stdio.h>
-
+#include <string.h>
 #include "str.h"
 
 /* Your task is: 
@@ -28,16 +28,17 @@ size_t StrGetLength(const char* pcSrc)
 char *StrCopy(char *pcDest, const char* pcSrc)
 {
   /* TODO: fill this function */
-	int i;
+	size_t i;
 	char *pcStart;
 	const char *pcEnd;
-	assert(pcEnd);
-	pcStart = pcDest;
 
-	for(i = 0; i < StrGetLength(pcSrc); i++){
-		*pcStart = *pcSrc;
+	//assert(pcEnd);
+	pcStart = pcDest;
+	pcEnd = pcSrc;
+	for(i = 0; i <= StrGetLength(pcEnd); i++){//while encounter \0 change!!
+		*pcStart = *pcEnd;
 		pcStart++;
-		pcSrc++;
+		pcEnd++;
 	}
   
   return pcDest;
@@ -76,17 +77,19 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	state = NON;
 
 	const char* pcOrig;
-	const char* pcTarget;
+	//const char* pcTarget;
 	const char* pcFind;
 	const char* pcTmp;
 
 	pcOrig = pcHaystack;
-	pcTarget = pcNeedle;
+	//pcTarget = pcNeedle;
+	pcTmp = pcNeedle;
+	pcFind = NULL;
 
 	while(*pcOrig){
 		switch(state){
 			case NON:
-				if(*pcOrig == *pcTarget){
+				if(*pcOrig == *pcNeedle){
 					pcFind = pcOrig;
 					pcOrig++;
 					pcTmp++;
@@ -99,23 +102,27 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 				break;
 
 			case FIND:
-				if(*pcTmp == NULL){
-					return pcFind;
-				}
-
+				
 				if(*pcOrig == *pcTmp){
 					pcOrig++;
 					pcTmp++;
 					state = FIND;
+					if(*pcTmp == '\0'){
+						return (char*)pcFind;
+					}
 				}
 				else{
-					pcOrig++;
-					pcTmp = pcTarget;
+					pcTmp = pcNeedle;
 					state = NON;
 				}
+				break;
+
+			default:
+				assert(0);
+				break;
 		}
 	}
-	return NULL; 
+	return (char*) NULL; 
 }
 /*------------------------------------------------------------------------*/
 char *StrConcat(char *pcDest, const char* pcSrc)

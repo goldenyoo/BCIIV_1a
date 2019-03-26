@@ -21,7 +21,7 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 	int i;
 	char *pcStart;
 	const char *pcEnd;
-	assert(pcEnd);
+	//assert(pcEnd);
 	pcStart = pcDest;
 
 	for(i = 0; i < StrGetLength(pcSrc); i++){
@@ -74,7 +74,7 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	while(*pcOrig){
 		switch(state){
 			case NON:
-				if(*pcOrig == *pcTarget){
+				if(*pcOrig == *pcNeedle){
 					pcFind = pcOrig;
 					pcOrig++;
 					pcTmp++;
@@ -87,17 +87,16 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 				break;
 
 			case FIND:
-				if(*pcTmp == '\0'){
-					return (char*)pcFind;
-				}
-
+				
 				if(*pcOrig == *pcTmp){
 					pcOrig++;
 					pcTmp++;
 					state = FIND;
+					if(*pcTmp == '\0'){
+						return (char*)pcFind;
+					}
 				}
 				else{
-					pcOrig++;
 					pcTmp = pcNeedle;
 					state = NON;
 				}
