@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "str.h"
+#define MAX_SIZE 100
 
 /* Your task is: 
    1. Rewrite the body of "Part 1" functions - remove the current
@@ -28,17 +29,21 @@ size_t StrGetLength(const char* pcSrc)
 char *StrCopy(char *pcDest, const char* pcSrc)
 {
   /* TODO: fill this function */
-	size_t i;
-	char *pcStart;
-	const char *pcEnd;
+	char *pcAsg;
+	const char *pcCpy;
 
 	//assert(pcEnd);
-	pcStart = pcDest;
-	pcEnd = pcSrc;
-	for(i = 0; i <= StrGetLength(pcEnd); i++){//while encounter \0 change!!
-		*pcStart = *pcEnd;
-		pcStart++;
-		pcEnd++;
+	pcAsg = pcDest;
+	pcCpy = pcSrc;
+	
+	if(!(*pcCpy)){
+		*pcAsg = '\0';
+		return pcDest;
+	}
+	while(*pcCpy){
+		*pcAsg = *pcCpy;
+		pcAsg++;
+		pcCpy++;
 	}
   
   return pcDest;
@@ -71,6 +76,8 @@ int StrCompare(const char* pcS1, const char* pcS2)
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
   /* TODO: fill this function */
+	//assert(*pcNeedle);
+
 	enum DFAState {FIND, NON};
 	enum DFAState state;
 
@@ -85,7 +92,9 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	//pcTarget = pcNeedle;
 	pcTmp = pcNeedle;
 	pcFind = NULL;
-
+	if(!(*pcNeedle)){
+		return (char*)	pcHaystack;
+	}
 	while(*pcOrig){
 		switch(state){
 			case NON:
@@ -128,6 +137,29 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 char *StrConcat(char *pcDest, const char* pcSrc)
 {
   /* TODO: fill this function */
+	char c_add[MAX_SIZE];
+	char *c_first;
+	const char *c_second;
+	char *c_output;
+
+	c_first = pcDest;
+	c_second = pcSrc;
+
+	c_output = StrCopy(c_add,c_first);
+
+	while(*c_output){
+		c_output++;
+	}
+
+	while(*c_second){
+		*c_output = *c_second;
+		c_output++;
+		c_second++;
+	}
+	*c_output = '\0';
+
+	pcDest = c_add;
+
   
-  return strcat(pcDest, pcSrc);
+  return pcDest;	
 }

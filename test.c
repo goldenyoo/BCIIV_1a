@@ -114,15 +114,22 @@ int main(void){
 	const char *s1 = "aaaaa"; // 9797102
 	char s2[128];
 	const char *s3 = "baaaa";// 100
-
+	char str_empty[] = "";
+	char *res2;
+  char str2[] = "StrSearch with Null\0 Following character "
+    "should not be searched";
+	res2 = strstr(str2, str_empty);
+printf("String.h Answer: [%s]\n", res2);
 	const char *s4 = "a acbboy at ";// 100
 	const char *s5 = "boy";// 100
-	const char *ptr;
+	const char *ptr = "\0";
 
-	ptr = strstr(s4,s5);
+
 	printf("%s\n", ptr);
-	ptr = StrSearch(s4,s5);
-	printf("%s\n", ptr);
+	// ptr = strstr(s4,s5);
+	// printf("%s\n", ptr);
+	// ptr = StrSearch(s4,s5);
+	// printf("%s\n", ptr);
 
 /* strcpy()*/
 	// strcpy(s2,s1);
