@@ -1,5 +1,6 @@
 #include <assert.h> /* to use assert() */
 #include <stdio.h>
+
 #include "str.h"
 
 /* Your task is: 
@@ -54,8 +55,8 @@ int StrCompare(const char* pcS1, const char* pcS2)
 
 	while(*pcOne && *pcSec){
 		if(*pcOne == *pcSec ){
-			*pcOne++;
-			*pcSec++;
+			pcOne++;
+			pcSec++;
 		}
 		else{
 			return *pcOne - *pcSec;
@@ -69,8 +70,52 @@ int StrCompare(const char* pcS1, const char* pcS2)
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
   /* TODO: fill this function */
- 
-  return strstr(pcHaystack, pcNeedle);
+	enum DFAState {FIND, NON};
+	enum DFAState state;
+
+	state = NON;
+
+	const char* pcOrig;
+	const char* pcTarget;
+	const char* pcFind;
+	const char* pcTmp;
+
+	pcOrig = pcHaystack;
+	pcTarget = pcNeedle;
+
+	while(*pcOrig){
+		switch(state){
+			case NON:
+				if(*pcOrig == *pcTarget){
+					pcFind = pcOrig;
+					pcOrig++;
+					pcTmp++;
+					state = FIND;
+				}
+				else{
+					pcOrig++;
+					state = NON;
+				}
+				break;
+
+			case FIND:
+				if(*pcTmp == NULL){
+					return pcFind;
+				}
+
+				if(*pcOrig == *pcTmp){
+					pcOrig++;
+					pcTmp++;
+					state = FIND;
+				}
+				else{
+					pcOrig++;
+					pcTmp = pcTarget;
+					state = NON;
+				}
+		}
+	}
+	return NULL; 
 }
 /*------------------------------------------------------------------------*/
 char *StrConcat(char *pcDest, const char* pcSrc)
