@@ -1,7 +1,7 @@
 #include <assert.h> /* to use assert() */
 #include <stdio.h>
 #include "str.h"
-#define MAX_SIZE 500
+#define MAX_SIZE 100
 
 /* Your task is: 
    1. Rewrite the body of "Part 1" functions - remove the current
@@ -136,7 +136,7 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 char *StrConcat(char *pcDest, const char* pcSrc)
 {
   /* TODO: fill this function */
-	char c_add[MAX_SIZE];
+	//char c_add[MAX_SIZE];
 	char *c_first;
 	const char *c_second;
 	char *c_output;
@@ -144,7 +144,8 @@ char *StrConcat(char *pcDest, const char* pcSrc)
 	c_first = pcDest;
 	c_second = pcSrc;
 
-	c_output = StrCopy(c_add,c_first);
+	c_output = c_first;
+	//c_output = StrCopy(c_add,c_first);
 
 	while(*c_output != '\0'){
 		c_output++;
@@ -157,8 +158,5 @@ char *StrConcat(char *pcDest, const char* pcSrc)
 	}
 	*c_output = '\0';
 
-	pcDest = c_add;
-
-  
   return pcDest;	
 }
