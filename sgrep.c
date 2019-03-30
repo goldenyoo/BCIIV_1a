@@ -116,6 +116,8 @@ int
 DoReplace(const char *pcString1, const char *pcString2)
 {
   char buf[MAX_STR_LEN + 2]; 
+  char dest[MAX_STR_LEN];
+  const char str_empty[] = "";
   int len;
   int it;
 
@@ -146,22 +148,42 @@ DoReplace(const char *pcString1, const char *pcString2)
       fprintf(stderr, "Error: input line is too long\n");
       return FALSE;
     }
-    /* Find the string*/
-    str_find = StrSearch(buf,str1);
-    if (str_find != NULL){
+    /* Find the string*/    
+ //    str_find = StrSearch(buf,str1);
+ //    if (str_find != NULL){
+ //      *str_find = '\0';
+ //      for(it = 0; it < StrGetLength(str1); it++){
+ //        str_find++;
+ //      }
+ //      str_tmp = StrConcat(dest, buf);
+ //      str_tmp = StrConcat(dest, str2);
+ //      str_tmp2 = StrConcat(str_tmp, str_find);
+
+
+ //      printf("%s", str_tmp2);
+ //      StrCopy(dest,str_empty);
+ //    }
+ //    else{
+ //      printf("%s", buf);
+ //    }
+    if((str_find = StrSearch(buf,str1)) == NULL){
+      printf("%s", buf);
+      continue;
+    }
+    while((str_find = StrSearch(buf,str1)) != NULL){
       *str_find = '\0';
       for(it = 0; it < StrGetLength(str1); it++){
         str_find++;
       }
-      str_tmp = StrConcat(buf, str2);
+      str_tmp = StrConcat(dest, buf);
+      str_tmp = StrConcat(dest, str2);
       str_tmp2 = StrConcat(str_tmp, str_find);
 
-      printf("%s \n", str_tmp2);
+      StrCopy(buf, str_tmp2);
+      StrCopy(dest,str_empty);
+    }
+    printf("%s", buf);
 
-    }
-    else{
-      printf("%s", buf);
-    }
   }
   return TRUE;
 }
