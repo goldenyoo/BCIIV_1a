@@ -1,6 +1,5 @@
 #include <assert.h> /* to use assert() */
 #include <stdio.h>
-#include <string.h>
 #include "str.h"
 #define MAX_SIZE 100
 

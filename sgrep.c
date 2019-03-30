@@ -72,19 +72,22 @@ DoFind(const char *pcSearch)
   /* 
    *  Fill out your variables here 
    */
+  const char* src_str;
+  src_str = pcSearch; 
    
   /* Read the line by line from stdin, Note that this is an example */
-  while (fgets(buf, sizeof(buf), stdin)) {
+  while (fgets(buf, sizeof(buf), stdin) != NULL) {
     /* check input line length */
     if ((len = StrGetLength(buf)) > MAX_STR_LEN) {
       fprintf(stderr, "Error: input line is too long\n");
-      return FALSE;
+      return EXIT_FAILURE;
     }
     /* TODO: fill out this function */
-      
+    if ((*StrSearch(buf,src_str))){
+      printf("%s\n", buf);
+    }
   }
-   
-  return TRUE;
+  return EXIT_SUCCESS;  
 }
 /*-------------------------------------------------------------------*/
 /* DoReplace()
