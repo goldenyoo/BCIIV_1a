@@ -117,12 +117,15 @@ DoReplace(const char *pcString1, const char *pcString2)
 {
   char buf[MAX_STR_LEN + 2]; 
   int len;
+  // int it;
 
   const char* str1;
   const char* str2;
-  char* str_find;
   str1 = pcString1;
   str2 = pcString2;
+  
+  char* str_find;
+  // char* str_tmp;
 
   /* TODO: fill out this function */  
   /* Do argument validation*/
@@ -145,11 +148,18 @@ DoReplace(const char *pcString1, const char *pcString2)
     /* Find the string*/
     str_find = StrSearch(buf,str1);
     if (str_find){
-      str_find = StrCopy(str_find,str2);         
-      printf("%s\n", buf);
+      str_find = StrCopy(str_find,"");
+      // for(it = 0; it < StrGetLength(str1); it++){
+      //   str_find++;
+      // }
+      // str_tmp = StrConcat(buf, str2);
+      // str_tmp = StrConcat(buf, str_find);
+
+      // printf("%s", str_tmp);
+      printf("%s", buf);
     }
     else{
-      printf("%s\n", buf);
+      printf("%s", buf);
     }
   }
   return TRUE;
@@ -188,6 +198,72 @@ DoReplace(const char *pcString1, const char *pcString2)
 int
 DoDiff(const char *file1, const char *file2)
 {
+  char buf1[MAX_STR_LEN + 2]; 
+  char buf2[MAX_STR_LEN + 2]; 
+  const char* c_tmp1;
+  const char* c_tmp2;
+  
+  // int len;
+  int line_num = 1;
+
+  const char* fin_1;
+  const char* fin_2;
+  fin_1 = file1;
+  fin_2 = file2;
+
+  FILE *fp1;
+  FILE *fp2;
+
+/*file name lenght validation. What about command-line????????*/
+  if (StrGetLength(fin_1) > MAX_STR_LEN ||StrGetLength(fin_2) > MAX_STR_LEN ){
+    fprintf(stderr, "Error: argument is too long\n");
+    return FALSE;
+  }
+
+  /*File open validation*/
+  fp1 = fopen(fin_1,"r");
+  fp2 = fopen(fin_2,"r");
+
+  if(fp1 == NULL && fp2 == NULL){
+    fprintf(stderr, "Error: failed to open file [%s]\n", fin_1);
+    fprintf(stderr, "Error: failed to open file [%s]\n", fin_2);
+    return FALSE;
+  }
+  else if(fp1 == NULL){
+    fprintf(stderr, "Error: failed to open file [%s]\n", fin_1);
+  }
+  else if(fp2 == NULL){
+    fprintf(stderr, "Error: failed to open file [%s]\n", fin_2);
+  }
+
+  while (fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL) {
+    /* check input line length */
+    if (StrGetLength(buf1) > MAX_STR_LEN && StrGetLength(buf2) > MAX_STR_LEN) {
+      fprintf(stderr, "Error: input line [%s] is too long", fin_1);
+      fprintf(stderr, "Error: input line [%s] is too long", fin_2);
+      return FALSE;
+    }
+    else if(StrGetLength(buf1) > MAX_STR_LEN){
+      fprintf(stderr, "Error: input line [%s] is too long", fin_1);
+      return FALSE;
+    }
+    else if(StrGetLength(buf2) > MAX_STR_LEN){
+      fprintf(stderr, "Error: input line [%s] is too long", fin_2);
+      return FALSE;
+    }
+    /* Find the different line*/
+    c_tmp1 = buf1;
+    c_tmp2 = buf2;
+    if(StrCompare(c_tmp1,c_tmp2) == 0){
+      continue;
+    }
+    else{
+      printf("%s@%d:%s\n",fin_1,line_num,buf1 );
+      printf("%s@%d:%s\n",fin_2,line_num,buf2 );
+    }
+    line_num++;
+
+  }
   /* TODO: fill out this function */  
   return TRUE;
 }

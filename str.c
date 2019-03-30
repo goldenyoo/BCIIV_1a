@@ -44,7 +44,7 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 		pcAsg++;
 		pcCpy++;
 	}
-  
+  	*pcAsg = '\0';
   return pcDest;
 }
 
