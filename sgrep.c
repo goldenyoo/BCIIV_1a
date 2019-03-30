@@ -74,20 +74,24 @@ DoFind(const char *pcSearch)
    */
   const char* src_str;
   src_str = pcSearch; 
+  if (StrGetLength(src_str) > MAX_STR_LEN){
+    fprintf(stderr, "Error: argument is too long\n");
+    return FALSE;
+  }
    
   /* Read the line by line from stdin, Note that this is an example */
   while (fgets(buf, sizeof(buf), stdin) != NULL) {
     /* check input line length */
     if ((len = StrGetLength(buf)) > MAX_STR_LEN) {
       fprintf(stderr, "Error: input line is too long\n");
-      return EXIT_FAILURE;
+      return FALSE;
     }
     /* TODO: fill out this function */
-    if ((*StrSearch(buf,src_str))){
+    if ((StrSearch(buf,src_str))){
       printf("%s\n", buf);
     }
   }
-  return EXIT_SUCCESS;  
+  return TRUE;  
 }
 /*-------------------------------------------------------------------*/
 /* DoReplace()
@@ -111,8 +115,43 @@ DoFind(const char *pcSearch)
 int
 DoReplace(const char *pcString1, const char *pcString2)
 {
-  /* TODO: fill out this function */  
+  char buf[MAX_STR_LEN + 2]; 
+  int len;
 
+  const char* str1;
+  const char* str2;
+  char* str_find;
+  str1 = pcString1;
+  str2 = pcString2;
+
+  /* TODO: fill out this function */  
+  /* Do argument validation*/
+  if (StrGetLength(str1) > MAX_STR_LEN ||StrGetLength(str2) > MAX_STR_LEN ){
+    fprintf(stderr, "Error: argument is too long\n");
+    return FALSE;
+  }
+  else if(!(*str1)){
+    fprintf(stderr, "Error: Can't replace an empty substring\n");
+    return FALSE;
+  }
+
+/*Actual Function*/
+  while (fgets(buf, sizeof(buf), stdin) != NULL) {
+    /* check input line length */
+    if ((len = StrGetLength(buf)) > MAX_STR_LEN) {
+      fprintf(stderr, "Error: input line is too long\n");
+      return FALSE;
+    }
+    /* Find the string*/
+    str_find = StrSearch(buf,str1);
+    if (str_find){
+      str_find = StrCopy(str_find,str2);         
+      printf("%s\n", buf);
+    }
+    else{
+      printf("%s\n", buf);
+    }
+  }
   return TRUE;
 }
 /*-------------------------------------------------------------------*/
