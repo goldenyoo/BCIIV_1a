@@ -88,7 +88,7 @@ DoFind(const char *pcSearch)
     }
     /* TODO: fill out this function */
     if ((StrSearch(buf,src_str))){
-      printf("%s\n", buf);
+      printf("%s", buf);
     }
   }
   return TRUE;  
@@ -117,7 +117,7 @@ DoReplace(const char *pcString1, const char *pcString2)
 {
   char buf[MAX_STR_LEN + 2]; 
   int len;
-  // int it;
+  int it;
 
   const char* str1;
   const char* str2;
@@ -125,7 +125,8 @@ DoReplace(const char *pcString1, const char *pcString2)
   str2 = pcString2;
   
   char* str_find;
-  // char* str_tmp;
+  char* str_tmp;
+  char* str_tmp2;
 
   /* TODO: fill out this function */  
   /* Do argument validation*/
@@ -147,16 +148,16 @@ DoReplace(const char *pcString1, const char *pcString2)
     }
     /* Find the string*/
     str_find = StrSearch(buf,str1);
-    if (str_find){
-      str_find = StrCopy(str_find,"");
-      // for(it = 0; it < StrGetLength(str1); it++){
-      //   str_find++;
-      // }
-      // str_tmp = StrConcat(buf, str2);
-      // str_tmp = StrConcat(buf, str_find);
+    if (str_find != NULL){
+      *str_find = '\0';
+      for(it = 0; it < StrGetLength(str1); it++){
+        str_find++;
+      }
+      str_tmp = StrConcat(buf, str2);
+      str_tmp2 = StrConcat(str_tmp, str_find);
 
-      // printf("%s", str_tmp);
-      printf("%s", buf);
+      printf("%s \n", str_tmp2);
+
     }
     else{
       printf("%s", buf);

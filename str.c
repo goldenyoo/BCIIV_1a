@@ -1,7 +1,7 @@
 #include <assert.h> /* to use assert() */
 #include <stdio.h>
 #include "str.h"
-#define MAX_SIZE 100
+#define MAX_SIZE 500
 
 /* Your task is: 
    1. Rewrite the body of "Part 1" functions - remove the current
@@ -35,11 +35,11 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 	pcAsg = pcDest;
 	pcCpy = pcSrc;
 	
-	if(!(*pcCpy)){
+	if(*pcCpy == '\0'){
 		*pcAsg = '\0';
 		return pcDest;
 	}
-	while(*pcCpy){
+	while(*pcCpy != '\0'){
 		*pcAsg = *pcCpy;
 		pcAsg++;
 		pcCpy++;
@@ -58,7 +58,7 @@ int StrCompare(const char* pcS1, const char* pcS2)
 	pcOne = pcS1;
 	pcSec = pcS2;
 
-	while(*pcOne && *pcSec){
+	while(*pcOne!='\0' && *pcSec!='\0'){
 		if(*pcOne == *pcSec ){
 			pcOne++;
 			pcSec++;
@@ -146,11 +146,11 @@ char *StrConcat(char *pcDest, const char* pcSrc)
 
 	c_output = StrCopy(c_add,c_first);
 
-	while(*c_output){
+	while(*c_output != '\0'){
 		c_output++;
 	}
 
-	while(*c_second){
+	while(*c_second != '\0'){
 		*c_output = *c_second;
 		c_output++;
 		c_second++;
