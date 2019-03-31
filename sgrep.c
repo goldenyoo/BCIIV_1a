@@ -284,8 +284,8 @@ DoDiff(const char *file1, const char *file2)
       continue;
     }
     else{
-      printf("%s@%d:%s\n",fin_1,line_num,c_tmp1 );
-      printf("%s@%d:%s\n",fin_2,line_num,c_tmp2);
+      printf("%s@%d:%s",fin_1,line_num,c_tmp1 );
+      printf("%s@%d:%s",fin_2,line_num,c_tmp2);
     }
     line_num++;
 
