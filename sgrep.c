@@ -136,7 +136,7 @@ DoReplace(const char *pcString1, const char *pcString2)
     fprintf(stderr, "Error: argument is too long\n");
     return FALSE;
   }
-  else if(!(*str1)){
+  else if(*str1 == '\0'){
     fprintf(stderr, "Error: Can't replace an empty substring\n");
     return FALSE;
   }
@@ -223,8 +223,8 @@ DoDiff(const char *file1, const char *file2)
 {
   char buf1[MAX_STR_LEN + 2]; 
   char buf2[MAX_STR_LEN + 2]; 
-  const char* c_tmp1;
-  const char* c_tmp2;
+  char* c_tmp1;
+  char* c_tmp2;
   
   // int len;
   int line_num = 1;
@@ -254,9 +254,11 @@ DoDiff(const char *file1, const char *file2)
   }
   else if(fp1 == NULL){
     fprintf(stderr, "Error: failed to open file [%s]\n", fin_1);
+    return FALSE;
   }
   else if(fp2 == NULL){
     fprintf(stderr, "Error: failed to open file [%s]\n", fin_2);
+    return FALSE;
   }
 
   while (fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL) {
@@ -278,11 +280,12 @@ DoDiff(const char *file1, const char *file2)
     c_tmp1 = buf1;
     c_tmp2 = buf2;
     if(StrCompare(c_tmp1,c_tmp2) == 0){
+      line_num++;
       continue;
     }
     else{
-      printf("%s@%d:%s\n",fin_1,line_num,buf1 );
-      printf("%s@%d:%s\n",fin_2,line_num,buf2 );
+      printf("%s@%d:%s\n",fin_1,line_num,c_tmp1 );
+      printf("%s@%d:%s\n",fin_2,line_num,c_tmp2);
     }
     line_num++;
 

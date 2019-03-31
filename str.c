@@ -15,7 +15,7 @@
 size_t StrGetLength(const char* pcSrc)
 {
   const char *pcEnd;
-  assert(pcSrc); /* NULL address, 0, and FALSE are identical. */
+  assert(pcSrc != NULL); /* NULL address, 0, and FALSE are identical. */
   pcEnd = pcSrc;
 	
   while (*pcEnd) /* null character and FALSE are identical. */
@@ -31,7 +31,7 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 	char *pcAsg;
 	const char *pcCpy;
 
-	//assert(pcEnd);
+	assert(pcDest != NULL && pcSrc != NULL);
 	pcAsg = pcDest;
 	pcCpy = pcSrc;
 	
@@ -55,6 +55,7 @@ int StrCompare(const char* pcS1, const char* pcS2)
 	const char* pcOne;
 	const char* pcSec;
 	
+	assert(pcS1 !=NULL && pcS2 != NULL);
 	pcOne = pcS1;
 	pcSec = pcS2;
 
@@ -75,7 +76,6 @@ int StrCompare(const char* pcS1, const char* pcS2)
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
   /* TODO: fill this function */
-	//assert(*pcNeedle);
 
 	enum DFAState {FIND, NON};
 	enum DFAState state;
@@ -86,6 +86,8 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	//const char* pcTarget;
 	const char* pcFind;
 	const char* pcTmp;
+
+	assert(pcHaystack != NULL && pcNeedle != NULL);
 
 	pcOrig = pcHaystack;
 	//pcTarget = pcNeedle;
@@ -140,6 +142,8 @@ char *StrConcat(char *pcDest, const char* pcSrc)
 	char *c_first;
 	const char *c_second;
 	char *c_output;
+
+	assert(pcDest != NULL && pcSrc != NULL);
 
 	c_first = pcDest;
 	c_second = pcSrc;
