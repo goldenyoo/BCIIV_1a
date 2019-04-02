@@ -1,3 +1,15 @@
+/*************************************************************/
+ //   File_name: sgrep.c
+ //   Programmer: Seungjae Yoo                             
+ //   Student ID: 20160767                                         
+ //   Assignment #2                                          
+ //   Last Modified: 2018_04_02                              
+ //                                       
+ //                    
+ //  This code is wrote on Sublime Text
+/*************************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* for skeleton code */
