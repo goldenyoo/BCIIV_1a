@@ -100,10 +100,10 @@ int StrCompare(const char* pcS1, const char* pcS2)
 }
 
 /*------------------------------------------------------------------*/
-/*StrCompare(): 
-  from the parameter pcS1 and pcS2, compare each chracter with
-  ASCII code. If chracter are different, return the value of 
-  ASCII code difference.                                         */
+/*StrSearch(): 
+  Using the parameter pcHaystack and pcNeedle, finding the exact
+  match of pcNeedle in pcHaystack. If the match exist, function 
+  returns the pointer which points the staring head of match. */
 /*------------------------------------------------------------------*/
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
@@ -167,7 +167,12 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	}
 	return (char*) NULL; /*If there is no matching, return NULL pointer*/
 }
-/*------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------*/
+/*StrConcat(): 
+  Using the parameter pcDest and pcSrc, function concatenate 
+  pcSrc at the end of pcDest.                                    */
+/*------------------------------------------------------------------*/
 char *StrConcat(char *pcDest, const char* pcSrc)
 {
 	char *c_first;
