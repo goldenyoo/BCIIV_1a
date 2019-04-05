@@ -32,10 +32,6 @@ typedef enum {
   DIFF
 } CommandType;
 
-/*
- * Fill out your functions here (If you need) 
- */
-
 /*--------------------------------------------------------------------*/
 /* PrintUsage()
    print out the usage of the Simple Grep Program                     */
@@ -81,30 +77,30 @@ DoFind(const char *pcSearch)
 {
   char buf[MAX_STR_LEN + 2]; 
   int len;
-  /* 
-   *  Fill out your variables here 
-   */
+
   const char* src_str;
   src_str = pcSearch; 
-  if (StrGetLength(src_str) > MAX_STR_LEN){
+
+  if (StrGetLength(src_str) > MAX_STR_LEN){/*Argument validation*/
     fprintf(stderr, "Error: argument is too long\n");
     return FALSE;
   }
    
-  /* Read the line by line from stdin, Note that this is an example */
+  /* Read the line by line from stdin*/
   while (fgets(buf, sizeof(buf), stdin) != NULL) {
     /* check input line length */
     if ((len = StrGetLength(buf)) > MAX_STR_LEN) {
       fprintf(stderr, "Error: input line is too long\n");
       return FALSE;
     }
-    /* TODO: fill out this function */
+    /*If we find pcSearch in buf, print out the whole line*/
     if ((StrSearch(buf,src_str))){
       printf("%s", buf);
     }
   }
   return TRUE;  
 }
+
 /*-------------------------------------------------------------------*/
 /* DoReplace()
    Your task:
@@ -130,6 +126,7 @@ DoReplace(const char *pcString1, const char *pcString2)
   char buf[MAX_STR_LEN + 2]; 
   char dest[MAX_STR_LEN];
   const char str_empty[] = "";
+
   int len;
   int it;
 
@@ -139,10 +136,9 @@ DoReplace(const char *pcString1, const char *pcString2)
   str2 = pcString2;
   
   char* str_find;
-  char* str_tmp;
-  char* str_tmp2;
+  // char* str_tmp;
+  // char* str_tmp2;
 
-  /* TODO: fill out this function */  
   /* Do argument validation*/
   if (StrGetLength(str1) > MAX_STR_LEN ||StrGetLength(str2) > MAX_STR_LEN ){
     fprintf(stderr, "Error: argument is too long\n");
@@ -153,46 +149,39 @@ DoReplace(const char *pcString1, const char *pcString2)
     return FALSE;
   }
 
-/*Actual Function*/
+  /* Read the line by line from stdin*/
   while (fgets(buf, sizeof(buf), stdin) != NULL) {
     /* check input line length */
     if ((len = StrGetLength(buf)) > MAX_STR_LEN) {
       fprintf(stderr, "Error: input line is too long\n");
       return FALSE;
     }
-    /* Find the string*/    
- //    str_find = StrSearch(buf,str1);
- //    if (str_find != NULL){
- //      *str_find = '\0';
- //      for(it = 0; it < StrGetLength(str1); it++){
- //        str_find++;
- //      }
- //      str_tmp = StrConcat(dest, buf);
- //      str_tmp = StrConcat(dest, str2);
- //      str_tmp2 = StrConcat(str_tmp, str_find);
-
-
- //      printf("%s", str_tmp2);
- //      StrCopy(dest,str_empty);
- //    }
- //    else{
- //      printf("%s", buf);
- //    }
+   /*pcString1 is not in the line, just print the line without any procedure*/
     if((str_find = StrSearch(buf,str1)) == NULL){
       printf("%s", buf);
       continue;
     }
+    /*If pcString1 is founded in the line*/
+    /*Process:
+      1. Assign '\0' at the *str_find
+        - buf will end just before the str1 occurence
+      2. move str_find to point end of the str1 occurence
+
+      3. Concatenate line
+        - conceptually can be represented as buf + str2 + str_find
+      4. Repeat the above process until there is no more str1 in the line*/
     while((str_find = StrSearch(buf,str1)) != NULL){
       *str_find = '\0';
       for(it = 0; it < StrGetLength(str1); it++){
         str_find++;
       }
-      str_tmp = StrConcat(dest, buf);
-      str_tmp = StrConcat(dest, str2);
-      str_tmp2 = StrConcat(str_tmp, str_find);
+      
+      StrConcat(dest, buf);
+      StrConcat(dest, str2);
+      StrConcat(dest, str_find);
 
-      StrCopy(buf, str_tmp2);
-      StrCopy(dest,str_empty);
+      StrCopy(buf, dest);
+      StrCopy(dest,str_empty); /*Initializing dest*/
     }
     printf("%s", buf);
 
@@ -235,10 +224,7 @@ DoDiff(const char *file1, const char *file2)
 {
   char buf1[MAX_STR_LEN + 2]; 
   char buf2[MAX_STR_LEN + 2]; 
-  char* c_tmp1;
-  char* c_tmp2;
   
-  // int len;
   int line_num = 1;
 
   const char* fin_1;
@@ -249,16 +235,17 @@ DoDiff(const char *file1, const char *file2)
   FILE *fp1;
   FILE *fp2;
 
-/*file name lenght validation. What about command-line????????*/
+/*file name length validation*/
   if (StrGetLength(fin_1) > MAX_STR_LEN ||StrGetLength(fin_2) > MAX_STR_LEN ){
     fprintf(stderr, "Error: argument is too long\n");
     return FALSE;
   }
 
-  /*File open validation*/
+  
   fp1 = fopen(fin_1,"r");
   fp2 = fopen(fin_2,"r");
 
+/*File open validation*/
   if(fp1 == NULL && fp2 == NULL){
     fprintf(stderr, "Error: failed to open file [%s]\n", fin_1);
     fprintf(stderr, "Error: failed to open file [%s]\n", fin_2);
@@ -276,33 +263,45 @@ DoDiff(const char *file1, const char *file2)
   while (fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL) {
     /* check input line length */
     if (StrGetLength(buf1) > MAX_STR_LEN && StrGetLength(buf2) > MAX_STR_LEN) {
-      fprintf(stderr, "Error: input line [%s] is too long", fin_1);
-      fprintf(stderr, "Error: input line [%s] is too long", fin_2);
+      fprintf(stderr, "Error: input line [%s] is too long\n", fin_1);
+      fprintf(stderr, "Error: input line [%s] is too long\n", fin_2);
+      fclose(fp1); fclose(fp2);
       return FALSE;
     }
     else if(StrGetLength(buf1) > MAX_STR_LEN){
-      fprintf(stderr, "Error: input line [%s] is too long", fin_1);
+      fprintf(stderr, "Error: input line [%s] is too long\n", fin_1);
+      fclose(fp1); fclose(fp2);
       return FALSE;
     }
     else if(StrGetLength(buf2) > MAX_STR_LEN){
-      fprintf(stderr, "Error: input line [%s] is too long", fin_2);
+      fprintf(stderr, "Error: input line [%s] is too long\n", fin_2);
+      fclose(fp1); fclose(fp2);
       return FALSE;
     }
     /* Find the different line*/
-    c_tmp1 = buf1;
-    c_tmp2 = buf2;
-    if(StrCompare(c_tmp1,c_tmp2) == 0){
+    if(StrCompare(buf1,buf2) == 0){
       line_num++;
       continue;
     }
     else{
-      printf("%s@%d:%s",fin_1,line_num,c_tmp1 );
-      printf("%s@%d:%s",fin_2,line_num,c_tmp2);
+      printf("%s@%d:%s",fin_1, line_num, buf1);
+      printf("%s@%d:%s",fin_2, line_num, buf2);
     }
     line_num++;
+  }/*END of while-loop*/
 
+  /*Check one of the files ends earlier*/
+  if (fgets(buf1, sizeof(buf1), fp1) == NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL){
+    fprintf(stderr, "Error: [%s] ends early at line %d\n",fin_1,line_num-1);
+    fclose(fp1); fclose(fp2);
+    return FALSE;
   }
-  /* TODO: fill out this function */  
+  else if(fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) == NULL){
+    fprintf(stderr, "Error: [%s] ends early at line %d\n",fin_2,line_num-1);
+    fclose(fp1); fclose(fp2);
+    return FALSE;
+  }
+  fclose(fp1); fclose(fp2);
   return TRUE;
 }
 /*-------------------------------------------------------------------*/
