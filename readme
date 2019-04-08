@@ -1,0 +1,8 @@
+Name: seungjae Yoo
+Student ID: 20160767
+Assignment #: 2
+
+There was no collaboration. I doen it by myself.
+
+Is it possible for StrCopy to call assert to verify that the destination memory area specified by the caller is large enough? Explain.
+- StrCopy gets information only from the parameters pcDest and pcSrc. pcDest is just a pointer points the location of the destination memeory area. Therefore, StrCopy has no way to assert whether memory is large enough or not. 
