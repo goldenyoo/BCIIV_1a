@@ -3,7 +3,7 @@
  //   Programmer: Seungjae Yoo                             
  //   Student ID: 20160767                                         
  //   Assignment #2                                          
- //   Last Modified: 2018_04_02                              
+ //   Last Modified: 2018_04_13                              
  //                                       
  //                    
  //  This code is wrote on Sublime Text
@@ -12,7 +12,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> /* for skeleton code */
 #include <unistd.h> /* for getopt */
 #include "str.h"
 
@@ -136,11 +135,10 @@ DoReplace(const char *pcString1, const char *pcString2)
   str2 = pcString2;
   
   char* str_find;
-  // char* str_tmp;
-  // char* str_tmp2;
 
   /* Do argument validation*/
-  if (StrGetLength(str1) > MAX_STR_LEN ||StrGetLength(str2) > MAX_STR_LEN ){
+  if (StrGetLength(str1) > MAX_STR_LEN ||
+    StrGetLength(str2) > MAX_STR_LEN ){
     fprintf(stderr, "Error: argument is too long\n");
     return FALSE;
   }
@@ -161,15 +159,15 @@ DoReplace(const char *pcString1, const char *pcString2)
       printf("%s", buf);
       continue;
     }
-    /*If pcString1 is founded in the line*/
-    /*Process:
-      1. Assign '\0' at the *str_find
-        - buf will end just before the str1 occurence
-      2. move str_find to point end of the str1 occurence
+/*If pcString1 is founded in the line*/
+/*Process:
+  1. Assign '\0' at the *str_find
+    - buf will end just before the str1 occurence
+  2. move str_find to point end of the str1 occurence
 
-      3. Concatenate line
-        - conceptually can be represented as buf + str2 + str_find
-      4. Repeat the above process until there is no more str1 in the line*/
+  3. Concatenate line
+    - conceptually can be represented as buf + str2 + str_find
+  4. Repeat the above process until there is no more str1 in the line*/
     while((str_find = StrSearch(buf,str1)) != NULL){
       *str_find = '\0';
       for(it = 0; it < StrGetLength(str1); it++){
@@ -236,7 +234,8 @@ DoDiff(const char *file1, const char *file2)
   FILE *fp2;
 
 /*file name length validation*/
-  if (StrGetLength(fin_1) > MAX_STR_LEN ||StrGetLength(fin_2) > MAX_STR_LEN ){
+  if (StrGetLength(fin_1) > MAX_STR_LEN ||
+    StrGetLength(fin_2) > MAX_STR_LEN ){
     fprintf(stderr, "Error: argument is too long\n");
     return FALSE;
   }
@@ -260,9 +259,11 @@ DoDiff(const char *file1, const char *file2)
     return FALSE;
   }
 
-  while (fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL) {
+  while (fgets(buf1, sizeof(buf1), fp1) != NULL  &&  
+    fgets(buf2, sizeof(buf2), fp2) != NULL) {
     /* check input line length */
-    if (StrGetLength(buf1) > MAX_STR_LEN && StrGetLength(buf2) > MAX_STR_LEN) {
+    if (StrGetLength(buf1) > MAX_STR_LEN && 
+      StrGetLength(buf2) > MAX_STR_LEN) {
       fprintf(stderr, "Error: input line [%s] is too long\n", fin_1);
       fprintf(stderr, "Error: input line [%s] is too long\n", fin_2);
       fclose(fp1); fclose(fp2);
@@ -291,12 +292,14 @@ DoDiff(const char *file1, const char *file2)
   }/*END of while-loop*/
 
   /*Check one of the files ends earlier*/
-  if (fgets(buf1, sizeof(buf1), fp1) == NULL  &&  fgets(buf2, sizeof(buf2), fp2) != NULL){
+  if (fgets(buf1, sizeof(buf1), fp1) == NULL  &&  
+    fgets(buf2, sizeof(buf2), fp2) != NULL){
     fprintf(stderr, "Error: [%s] ends early at line %d\n",fin_1,line_num-1);
     fclose(fp1); fclose(fp2);
     return FALSE;
   }
-  else if(fgets(buf1, sizeof(buf1), fp1) != NULL  &&  fgets(buf2, sizeof(buf2), fp2) == NULL){
+  else if(fgets(buf1, sizeof(buf1), fp1) != NULL  &&  
+    fgets(buf2, sizeof(buf2), fp2) == NULL){
     fprintf(stderr, "Error: [%s] ends early at line %d\n",fin_2,line_num-1);
     fclose(fp1); fclose(fp2);
     return FALSE;

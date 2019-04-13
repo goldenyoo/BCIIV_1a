@@ -3,7 +3,7 @@
  //   Programmer: Seungjae Yoo                             
  //   Student ID: 20160767                                         
  //   Assignment #2                                          
- //   Last Modified: 2018_04_02                              
+ //   Last Modified: 2018_04_13                            
  //                                       
  //                    
  //	 This code is wrote on Sublime Text
@@ -16,13 +16,6 @@
 #include <stdio.h>
 #include "str.h"
 
-/* Your task is: 
-   1. Rewrite the body of "Part 1" functions - remove the current
-      body that simply calls the corresponding C standard library
-      function.
-   2. Write appropriate comment per each function
-*/
-
 /* Part 1 */
 /*------------------------------------------------------------------*/
 /*StrGetLength(): 
@@ -33,7 +26,7 @@ size_t StrGetLength(const char* pcSrc)
 {
   const char *pcEnd;
 
-  assert(pcSrc != NULL); /* NULL address, 0, and FALSE are identical.*/
+  assert(pcSrc != NULL); /*NULL address, 0, and FALSE are identical.*/
   
   pcEnd = pcSrc;
 	
@@ -51,12 +44,12 @@ char *StrCopy(char *pcDest, const char* pcSrc)
 {
 	char *pcAsg;
 	const char *pcCpy;
-
-	assert(pcDest != NULL && pcSrc != NULL); /*Asserting parameteres are not NULL*/
+	/*Asserting parameteres are not NULL*/
+	assert(pcDest != NULL && pcSrc != NULL); 
 	pcAsg = pcDest;
 	pcCpy = pcSrc;
 	
-	if(*pcCpy == '\0'){/*copying just empty string results empty string*/
+	if(*pcCpy == '\0'){/*copying empty string results empty string*/
 		*pcAsg = '\0';
 		return pcDest;
 	}
@@ -80,13 +73,13 @@ int StrCompare(const char* pcS1, const char* pcS2)
 {
 	const char* pcOne;
 	const char* pcSec;
-	
-	assert(pcS1 != NULL && pcS2 != NULL);/*Asserting parameters are not NULL*/
+	/*Asserting parameters are not NULL*/
+	assert(pcS1 != NULL && pcS2 != NULL);
 
 	pcOne = pcS1;
 	pcSec = pcS2;
-
-	while(*pcOne!='\0' && *pcSec!='\0'){/*until we meet the '\0' chracter*/
+	/*until we meet the '\0' chracter*/
+	while(*pcOne!='\0' && *pcSec!='\0'){
 		if(*pcOne == *pcSec ){/*Compare chracter*/
 			pcOne++;
 			pcSec++;
@@ -107,7 +100,8 @@ int StrCompare(const char* pcS1, const char* pcS2)
 /*------------------------------------------------------------------*/
 char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 {
-	/*FIND: we enter FIND state, when some of chracter in pcNeedle matches to pcHaystack*/
+	/*FIND: we enter FIND state,                                 */
+	/*when some of chracter in pcNeedle matches to pcHaystack*/
 	enum DFAState {FIND, NON};
 	enum DFAState state;
 
@@ -116,14 +110,14 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 	const char* pcOrig;
 	const char* pcFind;
 	const char* pcTarget;
-
-	assert(pcHaystack != NULL && pcNeedle != NULL);/*Asserting parameters are not NULL*/
+	/*Asserting parameters are not NULL*/
+	assert(pcHaystack != NULL && pcNeedle != NULL);
 
 	pcOrig = pcHaystack;
 	pcTarget = pcNeedle;
 	pcFind = NULL;
-
-	if(!(*pcNeedle)){/*If we searching with empty string, just return original pcHaystack*/
+/*If we searching with empty string, just return original pcHaystack*/
+	if(!(*pcNeedle)){
 		return (char*)	pcHaystack;
 	}
 	while(*pcOrig){
@@ -148,13 +142,15 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 					pcTarget++;
 					state = FIND;
 
-					/*pcTarget matches all chracter, meaning that we find pcNeedle in pcHaystack*/
+					/*pcTarget matches all chracter, 
+					meaning that we find pcNeedle in pcHaystack*/
 					if(*pcTarget == '\0'){
 						return (char*)pcFind;
 					}
 				}
 				else{
-					/*Initialize pcTarget to pcNeedle so that we can search another matches*/
+				/*Initialize pcTarget to pcNeedle 
+				so that we can search another matches*/
 					pcTarget = pcNeedle;
 					state = NON;
 				}
@@ -165,7 +161,8 @@ char *StrSearch(const char* pcHaystack, const char *pcNeedle)
 				break;
 		}
 	}
-	return (char*) NULL; /*If there is no matching, return NULL pointer*/
+	/*If there is no matching, return NULL pointer*/
+	return (char*) NULL; 
 }
 
 /*------------------------------------------------------------------*/
@@ -178,8 +175,8 @@ char *StrConcat(char *pcDest, const char* pcSrc)
 	char *c_first;
 	const char *c_second;
 	char *c_output;
-
-	assert(pcDest != NULL && pcSrc != NULL);/*Assering parameteres are not NULL*/
+	/*Assering parameteres are not NULL*/
+	assert(pcDest != NULL && pcSrc != NULL);
 
 	c_first = pcDest;
 	c_second = pcSrc;
