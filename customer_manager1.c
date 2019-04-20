@@ -1,3 +1,13 @@
+/*************************************************************/
+ //   File_name: customer_manager1.c
+ //   Programmer: Seungjae Yoo                             
+ //   Student ID: 20160767                                         
+ //   Assignment #3                                         
+ //   Last Modified: 2019_04_20                              
+ //                                       
+ //                    
+ //  This code is wrote on Sublime Text
+/*************************************************************/
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
