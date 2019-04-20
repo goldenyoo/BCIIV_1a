@@ -136,37 +136,19 @@ UnregisterCustomerByID(DB_T d, const char *id)
   if(checker != 1){
     return (-1);
   }
-
-  DB_T tmp;
-
-  if(d->numItems == 1){
-    tmp = CreateCustomerDB();
-    DestroyCustomerDB(d);
-    d = tmp;
+  int j;
+  for(j = i; j < d->numItems -1 ;j++){
+    iter[j].id = strdup(iter[j+1].id);
+    // iter[j].id = iter[j+1].id;
+    iter[j].name = strdup(iter[j+1].name);
+    // iter[j].name = iter[j+1].name;
   }
-  else{
-    tmp = CreateCustomerDB();
-    int j;
-    int brk = 0;
-    for(j = 0;j<d->numItems;j++){
-      if(j == i){
-        brk = -1;
-        continue;
-      }
-      else{
-        RegisterCustomer(tmp,iter[j+brk].id,iter[j+brk].name,iter[j+brk].purchase);
-      }
-    }
-    tmp->numItems = d->numItems;
-    DestroyCustomerDB(d);
-    d = tmp;
-    assert(d != NULL);
-    d->numItems -=1;
-    assert(d->numItems >=0);
-  }
-  
+  iter[j].id = NULL;
+  iter[j].name = NULL;
+
+  d->numItems -= 1;
+
   return 0;
-
 }
 
 /*--------------------------------------------------------------------*/
@@ -191,34 +173,19 @@ UnregisterCustomerByName(DB_T d, const char *name)
   if(checker != 1){
     return (-1);
   }
-  DB_T tmp;
-  if(d->numItems == 1){
-    tmp = CreateCustomerDB();
-    DestroyCustomerDB(d);
-    d = tmp;
-  }
-  else{
-
-    tmp = CreateCustomerDB();
-    int j;
-    int brk = 0;
-    for(j = 0;j<d->numItems;j++){
-      if(j == i){
-        brk = -1;
-        continue;
-      }
-      else{
-        RegisterCustomer(tmp,iter[j+brk].id,iter[j+brk].name,iter[j+brk].purchase);
-      }
+  int j;
+    for(j = i; j < d->numItems -1 ;j++){
+      iter[j].id = strdup(iter[j+1].id);
+      // iter[j].id = iter[j+1].id;
+      iter[j].name = strdup(iter[j+1].name);
+      // iter[j].name = iter[j+1].name;
     }
-    tmp->numItems = d->numItems;
-    DestroyCustomerDB(d);
-    d = tmp;
-    assert(d != NULL);
-    d->numItems -=1;
-    assert(d->numItems >=0);
-  }
-  return 0;
+    iter[j].id = NULL;
+    iter[j].name = NULL;
+
+    d->numItems -= 1;
+
+    return 0;
 }
 /*--------------------------------------------------------------------*/
 int
