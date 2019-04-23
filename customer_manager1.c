@@ -93,6 +93,19 @@ RegisterCustomer(DB_T d, const char *id,
   if(d == NULL || id == NULL || name == NULL || purchase < 0 ){
     return (-1);
   }
+  if(d->numItems == d->curArrSize){
+    d->curArrSize += 1024;
+
+    struct UserInfo *new;
+    new = realloc(d->pArray,sizeof(struct UserInfo)*(d->curArrSize));
+    assert(new != NULL);
+    // free(d->pArray);
+    d->pArray = new;
+    // int j;
+    // for(j = d->numItems; j <d->curArrSize;j++ ){
+
+    // }
+  }
   struct UserInfo *iter;
   iter = d->pArray;
 
@@ -202,15 +215,38 @@ int
 GetPurchaseByID(DB_T d, const char* id)
 {
   /* fill out this function */
-  assert(0);
+  // assert(0);
+  if(d == NULL || id == NULL){
+    return (-1);
+  }
+  struct UserInfo *iter;
+  iter = d->pArray;
+  int i;
+  for(i = 0; i < d->numItems; i++){
+    if(strcmp(id,iter[i].id) == 0){
+      return iter[i].purchase;
+    }
+  }
   return (-1);
+
 }
 /*--------------------------------------------------------------------*/
 int
 GetPurchaseByName(DB_T d, const char* name)
 {
   /* fill out this function */
-  assert(0);
+  // assert(0);
+  if(d == NULL || name == NULL){
+    return (-1);
+  }
+  struct UserInfo *iter;
+  iter = d->pArray;
+  int i;
+  for(i = 0; i < d->numItems; i++){
+    if(strcmp(name,iter[i].name) == 0){
+      return iter[i].purchase;
+    }
+  }
   return (-1);
 }
 /*--------------------------------------------------------------------*/
@@ -218,6 +254,16 @@ int
 GetSumCustomerPurchase(DB_T d, FUNCPTR_T fp)
 {
   /* fill out this function */
-  assert(0);
-  return (-1);
+  // assert(0);
+  if(d == NULL || fp == NULL){
+    return (-1);
+  }
+  int sum = 0;
+  int i;
+  struct UserInfo *iter;
+  iter = d->pArray;
+  for(i = 0; i < d->numItems; i++){
+    sum += (*fp)(iter[i].id,iter[i].name,iter[i].purchase);
+  }
+  return sum;
 }
