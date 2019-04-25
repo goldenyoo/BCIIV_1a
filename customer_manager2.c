@@ -34,8 +34,8 @@ struct UserInfo{
   char *name;                // customer name
   char *id;                  // customer id
   int purchase;              // purchase amount (> 0)
-  static int Hash_id;
-  static int Hash_name;
+  int Hash_id;
+  int Hash_name;
 
   struct UserInfo (*next_id);
   struct UserInfo (*next_name);
@@ -61,23 +61,7 @@ struct Table *Table_create(void){
   t = calloc(1,sizeof(struct Table));
   return t;
 }
-void Table_add(DB_T d, const char *id, const char *name, const int purchase){
-  struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
-  if (p == NULL) {
-    fprintf(stderr, "Can't allocate a memory for UserInfo\n");
-    return NULL;
-  }
-  static int h_id = hash_function(id,d->curBuckSize);
-  static int h_name = hash_function(name,d->curBuckSize);
 
-  p->id = strdup(id);
-  p->name = strdup(name);
-  assert(p->id != NULL); assert(p->name != NULL);
-  p->Hash_id = h_id;
-  p->Hash_name = h_name;
-  p->next_id = d->id_Table->pArray[h_id];
-  p->next_name = d->name_Table->pArray[h_name];
-}
 
 void Table_free(DB_T d){
   struct UserInfo *p;
@@ -176,14 +160,45 @@ RegisterCustomer(DB_T d, const char *id,
   if(d == NULL || id == NULL || name == NULL || purchase < 0 ){
     return (-1);
   }
-  /*Here HASH TABLE Expansion!!!!!!!!!!!!!!!!!*/
-  /*
+ 
+ //Check the duplicate
+  int h_id = hash_function(id,d->curBuckSize);
+  int h_name = hash_function(name,d->curBuckSize);
 
-    Fill the blank
+struct UserInfo *iter;
+for(iter = d->id_Table->pArray[h_id]; iter != NULL; iter = iter->next_id){
+  if(strcmp(iter->id,id) == 0){
+    return -1;
+  }
+}
+for(iter = d->name_Table->pArray[h_name]; iter != NULL; iter = iter->next_name){
+  if(strcmp(iter->name,name) == 0){
+    return -1;
+  }
+}
+  // Table_add(d,id,name,purchase);
+  struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
+  if (p == NULL) {
+    fprintf(stderr, "Can't allocate a memory for UserInfo\n");
+    return -1;
+  }
+  
 
-  */
+  p->id = strdup(id);
+  p->name = strdup(name);
+  assert(p->id != NULL); assert(p->name != NULL);
+  p->purchase = purchase;
+  p->Hash_id = h_id;
+  p->Hash_name = h_name;
+  p->next_id = d->id_Table->pArray[h_id];
+  p->next_name = d->name_Table->pArray[h_name];
+  d->id_Table->pArray[h_id] = p;
+  d->name_Table->pArray[h_name] = p;
 
-  Table_add(d,id,name,purchase);
+
+
+
+
   d->numItems +=1;
 
   return 0;
