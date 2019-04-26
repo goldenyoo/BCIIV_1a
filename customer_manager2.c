@@ -123,7 +123,6 @@ CreateCustomerDB(void)
 void
 DestroyCustomerDB(DB_T d)
 {
-<<<<<<< HEAD
   if (d == NULL){
     return ;
   }
@@ -132,21 +131,6 @@ DestroyCustomerDB(DB_T d)
 
   struct Table *t_id, *t_name;
   t_id = d->id_Table; t_name = d->name_Table;
-=======
-  /* fill out this function */
-  // assert(0);
-  // return NULL;
-  if (d == NULL){
-    return ;
-  }
-  struct UserInfo *p;
-  struct UserInfo *nextp;
-  int b;
-  struct Table *t_id;
-  struct Table *t_name;
-  t_id = d->id_Table;
-  t_name = d->name_Table;
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 
   for(b = 0; b < d->curBuckSize; b++){
     for(p = t_id->pArray[b]; p != NULL; p = nextp){
@@ -154,34 +138,19 @@ DestroyCustomerDB(DB_T d)
       free(p);
     }
   }
-<<<<<<< HEAD
   free(t_id); free(t_name);
   free(d);
-=======
-  free(t_id);
-  free(t_name);
-
-  free(d);
-
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 }
 /*--------------------------------------------------------------------*/
 int
 RegisterCustomer(DB_T d, const char *id,
-		 const char *name, const int purchase)
+     const char *name, const int purchase)
 {
-<<<<<<< HEAD
-=======
-  /* fill out this function */
-  // assert(0);
-
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   if(d == NULL || id == NULL || name == NULL || purchase < 0 ){
     return (-1);
   }
  
  //Check the duplicate
-<<<<<<< HEAD
   int h_id = hash_function(id,d->curBuckSize); int h_name = hash_function(name,d->curBuckSize);
   struct UserInfo *iter;
 
@@ -194,21 +163,6 @@ RegisterCustomer(DB_T d, const char *id,
     if(strcmp(iter->name,name) == 0){/*Name already exist, return -1*/
       return -1;
     }
-=======
-  int h_id = hash_function(id,d->curBuckSize);
-  int h_name = hash_function(name,d->curBuckSize);
-
-struct UserInfo *iter;
-for(iter = d->id_Table->pArray[h_id]; iter != NULL; iter = iter->next_id){
-  if(strcmp(iter->id,id) == 0){
-    return -1;
-  }
-}
-for(iter = d->name_Table->pArray[h_name]; iter != NULL; iter = iter->next_name){
-  if(strcmp(iter->name,name) == 0){
-    return -1;
-  }
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 }
 
 /*Table Expansion*/
@@ -260,31 +214,18 @@ for(iter = d->name_Table->pArray[h_name]; iter != NULL; iter = iter->next_name){
   p->id = strdup(id);
   p->name = strdup(name);
   assert(p->id != NULL); assert(p->name != NULL);
-<<<<<<< HEAD
   /*All data saved at (struct UserInfo) p */
-=======
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   p->purchase = purchase;
   p->Hash_id = h_id;
   p->Hash_name = h_name;
   p->next_id = d->id_Table->pArray[h_id];
   p->next_name = d->name_Table->pArray[h_name];
-<<<<<<< HEAD
   
   /*Add at head of the linked list*/
   d->id_Table->pArray[h_id] = p;
   d->name_Table->pArray[h_name] = p;
 
   /*Increment the number of item*/
-=======
-  d->id_Table->pArray[h_id] = p;
-  d->name_Table->pArray[h_name] = p;
-
-
-
-
-
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   d->numItems +=1;
 
   return 0;
@@ -301,11 +242,7 @@ UnregisterCustomerByID(DB_T d, const char *id)
   struct UserInfo *p;
   struct UserInfo *q;
   q = NULL;
-<<<<<<< HEAD
 
-=======
-  // struct UserInfo *tmp;
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   int h = hash_function(id,d->curBuckSize);
   int checker = 0;
   for(p = d->id_Table->pArray[h]; p != NULL; p = p->next_id){
@@ -316,28 +253,15 @@ UnregisterCustomerByID(DB_T d, const char *id)
     }
     q = p;
   }
-<<<<<<< HEAD
   if(checker != 1){
     return -1;
   }
-=======
-printf("OUT1\n");
-  if(checker != 1){
-    return -1;
-  }
-  // tmp = q->next_id;
-  printf("OUT1.5\n");
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   if(q != NULL){
     q->next_id = p->next_id;
   }
   else{
     d->id_Table->pArray[h] = NULL;
   }
-<<<<<<< HEAD
-=======
-printf("OUT2\n");
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 
   struct UserInfo *l;
   struct UserInfo *m;
@@ -437,7 +361,6 @@ GetPurchaseByID(DB_T d, const char* id)
   if(d == NULL || id == NULL){
     return (-1);
   }
-<<<<<<< HEAD
 
   struct UserInfo *p;
   int h = hash_function(id,d->curBuckSize);
@@ -454,18 +377,6 @@ GetPurchaseByID(DB_T d, const char* id)
   else{
     return p->purchase;
   }
-=======
-  // struct UserInfo *iter;
-  // iter = d->pArray;
-  // int i;
-  // for(i = 0; i < d->numItems; i++){
-  //   if(strcmp(id,iter[i].id) == 0){
-  //     return iter[i].purchase;
-  //   }
-  // }
-  return (-1);
-
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 }
 /*--------------------------------------------------------------------*/
 int
@@ -476,7 +387,6 @@ GetPurchaseByName(DB_T d, const char* name)
   if(d == NULL || name == NULL){
     return (-1);
   }
-<<<<<<< HEAD
   struct UserInfo *p;
   int h = hash_function(name,d->curBuckSize);
   int checker = 0;
@@ -492,17 +402,6 @@ GetPurchaseByName(DB_T d, const char* name)
   else{
     return p->purchase;
   }
-=======
-  // struct UserInfo *iter;
-  // iter = d->pArray;
-  // int i;
-  // for(i = 0; i < d->numItems; i++){
-  //   if(strcmp(name,iter[i].name) == 0){
-  //     return iter[i].purchase;
-  //   }
-  // }
-  return (-1);
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
 }
 /*--------------------------------------------------------------------*/
 int
@@ -514,7 +413,6 @@ GetSumCustomerPurchase(DB_T d, FUNCPTR_T fp)
     return (-1);
   }
   int sum = 0;
-<<<<<<< HEAD
   struct UserInfo *p;
   struct UserInfo *nextp;
   int b;
@@ -524,13 +422,5 @@ GetSumCustomerPurchase(DB_T d, FUNCPTR_T fp)
       nextp = p->next_id;
     }
   }
-=======
-  // int i;
-  // struct UserInfo *iter;
-  // iter = d->pArray;
-  // for(i = 0; i < d->numItems; i++){
-  //   sum += (*fp)(iter[i].id,iter[i].name,iter[i].purchase);
-  // }
->>>>>>> ac8716076bae3a328e0ca3f446b0c4442a610d0e
   return sum;
 }
