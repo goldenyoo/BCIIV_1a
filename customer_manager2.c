@@ -176,6 +176,45 @@ for(iter = d->name_Table->pArray[h_name]; iter != NULL; iter = iter->next_name){
     return -1;
   }
 }
+
+/*Table Expansion*/
+// if(d->numItems >= 0.75*d->curBuckSize){
+//   d->curBuckSize *= 2;
+//   struct UserInfo *tmp_arry_id;
+//   struct UserInfo *tmp_arry_name;
+//   tmp_arry_id = calloc(d->curBuckSize,sizeof(struct UserInfo));
+//   tmp_arry_name = calloc(d->curBuckSize,sizeof(struct UserInfo));
+
+//   int b;
+//   struct Table *t_id;
+//   struct Table *t_name;
+//   t_id = d->id_Table;
+//   t_name = d->name_Table;
+//   struct UserInfo *p;
+//   // struct UserInfo *nextp;
+
+//   /*Moving original data to new Hash Table*/
+//   for(b = 0; b < (d->curBuckSize)/2; b++){
+//     p = t_id->pArray[b];
+//     if(p != NULL){
+//       tmp_arry_id[b%2].next_id = p->next_id;
+//     }
+//   }
+//   for(b = 0; b < (d->curBuckSize)/2; b++){
+//     p = t_name->pArray[b];
+//     if(p != NULL){
+//       tmp_arry_name[b%2].next_name = p->next_name;
+//     }
+//   }
+//   /*Free the old Hash Table*/
+//   free(d->id_Table->pArray);
+//   free(d->name_Table->pArray);
+
+//   d->id_Table->pArray = tmp_arry_id;
+//   d->name_Table->pArray = tmp_arry_name;
+
+// }
+
   // Table_add(d,id,name,purchase);
   struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
   if (p == NULL) {
@@ -212,30 +251,58 @@ UnregisterCustomerByID(DB_T d, const char *id)
   if(d == NULL || id == NULL){
     return (-1);
   }
-  // struct UserInfo *iter;
-  // iter = d->pArray;
-  // int i;
-  // int checker = 0;
-  // for(i = 0;i<d->numItems;i++){
-  //   if(strcmp(iter[i].id,id)==0){
-  //     checker = 1;
-  //     break;
-  //   }
-  // }
-  // if(checker != 1){
-  //   return (-1);
-  // }
-  // int j;
-  // for(j = i; j < d->numItems -1 ;j++){
-  //   iter[j].id = strdup(iter[j+1].id);
-  //   // iter[j].id = iter[j+1].id;
-  //   iter[j].name = strdup(iter[j+1].name);
-  //   // iter[j].name = iter[j+1].name;
-  // }
-  // iter[j].id = NULL;
-  // iter[j].name = NULL;
+  struct UserInfo *p;
+  struct UserInfo *q;
+  q = NULL;
+  // struct UserInfo *tmp;
+  int h = hash_function(id,d->curBuckSize);
+  int checker = 0;
+  for(p = d->id_Table->pArray[h]; p != NULL; p = p->next_id){
 
-  // d->numItems -= 1;
+    if(strcmp(p->id,id) == 0){
+      checker =1;
+      break;
+    }
+    q = p;
+  }
+printf("OUT1\n");
+  if(checker != 1){
+    return -1;
+  }
+  // tmp = q->next_id;
+  printf("OUT1.5\n");
+  if(q != NULL){
+    q->next_id = p->next_id;
+  }
+  else{
+    d->id_Table->pArray[h] = NULL;
+  }
+printf("OUT2\n");
+
+  struct UserInfo *l;
+  struct UserInfo *m;
+  m = NULL;
+  checker = 0;
+  for(l = d->name_Table->pArray[p->Hash_name]; l != NULL; l = l->next_name){
+
+    if(strcmp(l->id,id) == 0){
+      checker =1;
+      break;
+    }
+    m = l;
+  }
+  if(checker != 1){
+    return -1;
+  }
+  if(m != NULL){
+    m->next_name = l->next_name;
+  }
+  else{
+    d->name_Table->pArray[p->Hash_name] = NULL;
+  }
+
+  free(l);
+  // free(p);
 
   return 0;
 }
@@ -249,30 +316,55 @@ UnregisterCustomerByName(DB_T d, const char *name)
   if(d == NULL || name == NULL){
     return (-1);
   }
-  // struct UserInfo *iter;
-  // iter = d->pArray;
-  // int i;
-  // int checker = 0;
-  // for(i = 0;i<d->numItems;i++){
-  //   if(strcmp(iter[i].name,name)==0){
-  //     checker = 1;
-  //     break;
-  //   }
-  // }
-  // if(checker != 1){
-  //   return (-1);
-  // }
-  // int j;
-  //   for(j = i; j < d->numItems -1 ;j++){
-  //     iter[j].id = strdup(iter[j+1].id);
-  //     // iter[j].id = iter[j+1].id;
-  //     iter[j].name = strdup(iter[j+1].name);
-  //     // iter[j].name = iter[j+1].name;
-  //   }
-  //   iter[j].id = NULL;
-  //   iter[j].name = NULL;
+  struct UserInfo *p;
+  struct UserInfo *q;
+  q = NULL;
+  // struct UserInfo *tmp;
+  int h = hash_function(name,d->curBuckSize);
+  int checker = 0;
+  for(p = d->name_Table->pArray[h]; p != NULL; p = p->next_name){
 
-  //   d->numItems -= 1;
+    if(strcmp(p->name,name) == 0){
+      checker =1;
+      break;
+    }
+    q = p;
+  }
+
+  if(checker != 1){
+    return -1;
+  }
+  // tmp = q->next_id;
+  if(q != NULL){
+    q->next_name = p->next_name;
+  }
+  else{
+    d->name_Table->pArray[h] = NULL;
+  }
+  struct UserInfo *l;
+  struct UserInfo *m;
+  m = NULL;
+  checker = 0;
+  for(l = d->id_Table->pArray[p->Hash_id]; l != NULL; l = l->next_id){
+
+    if(strcmp(l->name,name) == 0){
+      checker =1;
+      break;
+    }
+    m = l;
+  }
+  if(checker != 1){
+    return -1;
+  }
+
+  if(m != NULL){
+    m->next_id = l->next_id;
+  }
+  else{
+    d->id_Table->pArray[p->Hash_id] = NULL;
+  }
+  free(l);
+  // free(p);
 
     return 0;
 }
