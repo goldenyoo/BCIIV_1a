@@ -55,7 +55,7 @@ struct DB {
 };
 
 struct Table{
-  struct UserInfo **pArray;
+  struct UserInfo *pArray[BUCKET_COUNT];
 };
 
 struct Table *Table_create(void){
@@ -82,10 +82,8 @@ CreateCustomerDB(void)
   d->curBuckSize = BUCKET_COUNT; // start with 1024 elements
 
   /*Create Hash Table for id*/
-  d->id_Table = calloc(1,sizeof(struct Table));
-  d->id_Table->pArray = calloc(BUCKET_COUNT,sizeof(struct UserInfo *));
-  printf("dsfsdfsdfsf\n");
-  if(d->id_Table->pArray == NULL){//Verify id_Table
+  d->id_Table = Table_create();
+  if(d->id_Table == NULL){//Verify id_Table
     fprintf(stderr, "Can't allocate a memory for Hash Table of size %d\n",
       d->curBuckSize);   
     free(d);
@@ -93,9 +91,8 @@ CreateCustomerDB(void)
   }
   
   /*Create Hash Table for name*/
-  d->name_Table = calloc(1,sizeof(struct Table));
-  d->name_Table->pArray = (struct UserInfo **) calloc(BUCKET_COUNT,sizeof(struct UserInfo  *));
-  if(d->name_Table->pArray == NULL){//Verify name_Table
+  d->name_Table = Table_create();
+  if(d->name_Table == NULL){//Verify name_Table
     fprintf(stderr, "Can't allocate a memory for Hash Table of size %d\n",
       d->curBuckSize);   
     free(d);
@@ -137,9 +134,8 @@ DestroyCustomerDB(DB_T d)
 }
 /*--------------------------------------------------------------------*/
 int TableExpansion(DB_T d){
- return 0; 
+  return 0;
 }
-/*--------------------------------------------------------------------*/
 int
 RegisterCustomer(DB_T d, const char *id,
      const char *name, const int purchase)
