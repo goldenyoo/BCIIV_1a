@@ -12,10 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-<<<<<<< HEAD
 #include <math.h>
-=======
->>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
 #include "customer_manager.h"
 
 
@@ -23,10 +20,7 @@ enum {HASH_MULTIPLIER = 65599};
 enum {BUCKET_COUNT = 1024};
 #define UNIT_ARRAY_SIZE 1024
 
-<<<<<<< HEAD
 
-=======
->>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
 /* Return a hash code for pcKey that is between 0 and iBucketCount-1,
    inclusive. Adapted from the EE209 lecture notes. */
 static int hash_function(const char *pcKey, int iBucketCount){
@@ -139,92 +133,10 @@ DestroyCustomerDB(DB_T d)
   return ;
 }
 /*--------------------------------------------------------------------*/
-<<<<<<< HEAD
 int TableExpansion(DB_T d){
-  DB_T s;
-  s=CreateCustomerDB();
-  struct UserInfo *k;
-  struct UserInfo *nextk;
-  int b;
-  for(b = 0; b < d->curBuckSize; b++){
-    for(k = d->id_Table->pArray[b]; k!= NULL; k = nextk){
-      nextk = k->next_id;
-
-      struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
-
-      /*Copy id, name to UserInfo*/
-      p->id = strdup(k->id);
-      p->name = strdup(k->name);
-      assert(p->id != NULL); assert(p->name != NULL);//verify the strdup()
-    
-      /*All data saved at (struct UserInfo) p */
-      p->purchase = k->purchase;
-      p->next_id = s->id_Table->pArray[b];
-      
-      /*Add at head of the linked list*/
-      s->id_Table->pArray[b] = p;
-    }
-  }
-  d->curBuckSize *= 2;
-  struct UserInfo *arr_id[d->curBuckSize];
-  struct UserInfo *arr_name[d->curBuckSize];
-  // int old_h_id = h_id; int old_h_name = h_name;
-  // h_id = hash_function(id,d->curBuckSize); h_name = hash_function(name,d->curBuckSize);
-
-  // arr_id = (struct UserInfo *)realloc(d->id_Table->pArray,sizeof(d->id_Table->pArray)*2);
-  // arr_name = (struct UserInfo *)realloc(d->name_Table->pArray,sizeof(d->name_Table->pArray)*2);
-  for(b=0;b<d->curBuckSize;b++){
-    arr_id[b] = NULL;
-    arr_name[b] = NULL;
-  }
-  if (arr_id == NULL || arr_name == NULL) {
-    fprintf(stderr, "Can't allocate a memory for resized Hash Table\n");
-    return -1;
-  }
   
-
-  for(b = 0; b< s->curBuckSize; b++){
-    for(k =s->id_Table->pArray[b]; k!=NULL;k = nextk){
-      struct UserInfo *q = calloc(1, sizeof(struct UserInfo));
-      /*verify the pointer p*/
-      if (q == NULL) {
-        fprintf(stderr, "Can't allocate a memory for UserInfo\n");
-        return -1;
-      }
-      
-      /*Copy id, name to UserInfo*/
-      q->id = strdup(k->id);
-      q->name = strdup(k->name);
-      assert(q->id != NULL); assert(q->name != NULL);//verify the strdup()
-      
-      /*All data saved at (struct UserInfo) p */
-      q->purchase = k->purchase;
-      q->Hash_id = hash_function(q->id,d->curBuckSize);
-      q->Hash_name = hash_function(q->name,d->curBuckSize);
-      q->next_id = arr_id[q->Hash_id];
-      q->next_name = arr_name[q->Hash_name];
-      
-      /*Add at head of the linked list*/
-      arr_id[q->Hash_id] = q;
-      arr_name[q->Hash_name] = q;
-    }
-  }
-  d->id_Table = realloc(d->id_Table,sizeof(d->id_Table)*2);
-  d->name_Table= realloc(d->name_Table,sizeof(d->name_Table)*2);
-  for(b=0;b< d->curBuckSize/2;b++){
-    for(k = d->id_Table->pArray[b]; k!= NULL; k = nextk){
-      nextk=k->next_id;
-      free(k);
-    }
-  }
-  for(b=0;b<d->curBuckSize;b++){
-    d->id_Table->pArray[b] = arr_id[b];
-    d->name_Table->pArray[b] = arr_name[b];
-  }
-  return 0;
 }
-=======
->>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
+/*--------------------------------------------------------------------*/
 int
 RegisterCustomer(DB_T d, const char *id,
      const char *name, const int purchase)
@@ -251,48 +163,9 @@ RegisterCustomer(DB_T d, const char *id,
 
 /*Table Expansion*/
 // if(d->numItems >= 0.75*d->curBuckSize){
-<<<<<<< HEAD
 //   TableExpansion(d);
 // }
 
-=======
-//   d->curBuckSize *= 2;
-//   struct UserInfo *tmp_arry_id;
-//   struct UserInfo *tmp_arry_name;
-//   tmp_arry_id = calloc(d->curBuckSize,sizeof(struct UserInfo));
-//   tmp_arry_name = calloc(d->curBuckSize,sizeof(struct UserInfo));
-
-//   int b;
-//   struct Table *t_id;
-//   struct Table *t_name;
-//   t_id = d->id_Table;
-//   t_name = d->name_Table;
-//   struct UserInfo *p;
-//   // struct UserInfo *nextp;
-
-//   /*Moving original data to new Hash Table*/
-//   for(b = 0; b < (d->curBuckSize)/2; b++){
-//     p = t_id->pArray[b];
-//     if(p != NULL){
-//       tmp_arry_id[b%2].next_id = p->next_id;
-//     }
-//   }
-//   for(b = 0; b < (d->curBuckSize)/2; b++){
-//     p = t_name->pArray[b];
-//     if(p != NULL){
-//       tmp_arry_name[b%2].next_name = p->next_name;
-//     }
-//   }
-//   /*Free the old Hash Table*/
-//   free(d->id_Table->pArray);
-//   free(d->name_Table->pArray);
-
-//   d->id_Table->pArray = tmp_arry_id;
-//   d->name_Table->pArray = tmp_arry_name;
-
-// }
-  
->>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
   /*allocate memory for new UserInfo*/
   struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
   /*verify the pointer p*/
@@ -538,3 +411,4 @@ GetSumCustomerPurchase(DB_T d, FUNCPTR_T fp)
   }
   return sum;
 }
+
