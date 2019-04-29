@@ -12,7 +12,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+<<<<<<< HEAD
 #include <math.h>
+=======
+>>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
 #include "customer_manager.h"
 
 
@@ -20,7 +23,10 @@ enum {HASH_MULTIPLIER = 65599};
 enum {BUCKET_COUNT = 1024};
 #define UNIT_ARRAY_SIZE 1024
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
 /* Return a hash code for pcKey that is between 0 and iBucketCount-1,
    inclusive. Adapted from the EE209 lecture notes. */
 static int hash_function(const char *pcKey, int iBucketCount){
@@ -133,6 +139,7 @@ DestroyCustomerDB(DB_T d)
   return ;
 }
 /*--------------------------------------------------------------------*/
+<<<<<<< HEAD
 int TableExpansion(DB_T d){
   DB_T s;
   s=CreateCustomerDB();
@@ -216,6 +223,8 @@ int TableExpansion(DB_T d){
   }
   return 0;
 }
+=======
+>>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
 int
 RegisterCustomer(DB_T d, const char *id,
      const char *name, const int purchase)
@@ -242,9 +251,48 @@ RegisterCustomer(DB_T d, const char *id,
 
 /*Table Expansion*/
 // if(d->numItems >= 0.75*d->curBuckSize){
+<<<<<<< HEAD
 //   TableExpansion(d);
 // }
 
+=======
+//   d->curBuckSize *= 2;
+//   struct UserInfo *tmp_arry_id;
+//   struct UserInfo *tmp_arry_name;
+//   tmp_arry_id = calloc(d->curBuckSize,sizeof(struct UserInfo));
+//   tmp_arry_name = calloc(d->curBuckSize,sizeof(struct UserInfo));
+
+//   int b;
+//   struct Table *t_id;
+//   struct Table *t_name;
+//   t_id = d->id_Table;
+//   t_name = d->name_Table;
+//   struct UserInfo *p;
+//   // struct UserInfo *nextp;
+
+//   /*Moving original data to new Hash Table*/
+//   for(b = 0; b < (d->curBuckSize)/2; b++){
+//     p = t_id->pArray[b];
+//     if(p != NULL){
+//       tmp_arry_id[b%2].next_id = p->next_id;
+//     }
+//   }
+//   for(b = 0; b < (d->curBuckSize)/2; b++){
+//     p = t_name->pArray[b];
+//     if(p != NULL){
+//       tmp_arry_name[b%2].next_name = p->next_name;
+//     }
+//   }
+//   /*Free the old Hash Table*/
+//   free(d->id_Table->pArray);
+//   free(d->name_Table->pArray);
+
+//   d->id_Table->pArray = tmp_arry_id;
+//   d->name_Table->pArray = tmp_arry_name;
+
+// }
+  
+>>>>>>> aa884f917cf8cae23e33b3065873d62c84654eb7
   /*allocate memory for new UserInfo*/
   struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
   /*verify the pointer p*/
