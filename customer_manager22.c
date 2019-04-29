@@ -58,11 +58,11 @@ struct Table{
   struct UserInfo **pArray;
 };
 
-struct Table *Table_create(void){
-  struct Table *t;
-  t = calloc(1,sizeof(struct Table));
-  return t;
-}
+// struct Table *Table_create(void){
+//   struct Table *t;
+//   t = calloc(1,sizeof(struct Table));
+//   return t;
+// }
 
 
 /*--------------------------------------------------------------------*/
@@ -165,9 +165,9 @@ RegisterCustomer(DB_T d, const char *id,
 }
 
 /*Table Expansion*/
-// if(d->numItems >= 0.75*d->curBuckSize){
-//   TableExpansion(d);
-// }
+  if(d->numItems >= 0.75*d->curBuckSize){
+    TableExpansion(d);
+  }
 
   /*allocate memory for new UserInfo*/
   struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
