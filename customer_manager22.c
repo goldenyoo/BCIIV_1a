@@ -84,7 +84,6 @@ CreateCustomerDB(void)
   /*Create Hash Table for id*/
   d->id_Table = calloc(1,sizeof(struct Table));
   d->id_Table->pArray = calloc(BUCKET_COUNT,sizeof(struct UserInfo *));
-  printf("dsfsdfsdfsf\n");
   if(d->id_Table->pArray == NULL){//Verify id_Table
     fprintf(stderr, "Can't allocate a memory for Hash Table of size %d\n",
       d->curBuckSize);   
@@ -137,7 +136,80 @@ DestroyCustomerDB(DB_T d)
 }
 /*--------------------------------------------------------------------*/
 int TableExpansion(DB_T d){
- return 0; 
+  
+  int b;
+  struct UserInfo *k;
+  struct UserInfo *nextk;
+  struct UserInfo *tmp_array;
+  tmp_array = calloc(d->numItems,sizeof(struct UserInfo));
+  int index = 0;
+  for(b = 0; b < d->curBuckSize; b++){
+    for(k=d->id_Table->pArray[b];k!=NULL;k = nextk){
+      nextk=k->next_id;
+      tmp_array[index].id = strdup(k->id);
+      tmp_array[index].name = strdup(k->name);
+      tmp_array[index].purchase = k->purchase;
+      index++;
+    }
+  }
+  d->curBuckSize *= 2;
+  struct UserInfo **tmp_id;
+  struct UserInfo **tmp_name;
+
+  tmp_id = realloc(d->id_Table->pArray,sizeof(struct UserInfo *)*(d->curBuckSize));
+  tmp_name = realloc(d->name_Table->pArray,sizeof(struct UserInfo *)*(d->curBuckSize));
+  if(tmp_id == NULL || tmp_name == NULL){
+    fprintf(stderr, "Can't resize a Hash Table\n");
+    return -1;
+  }
+  for(b=0;b<d->curBuckSize;b++){
+    tmp_id[b] = NULL;
+    tmp_name[b] = NULL;
+  }
+
+  for(b = 0; b < d->numItems; b++){
+    struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
+    /*verify the pointer p*/
+    if (p == NULL) {
+      fprintf(stderr, "Can't allocate a memory for UserInfo\n");
+      return -1;
+    }
+    
+    /*Copy id, name to UserInfo*/
+    p->id = strdup(tmp_array[b].id);
+    p->name = strdup(tmp_array[b].name);
+    assert(p->id != NULL); assert(p->name != NULL);//verify the strdup()
+    
+    /*All data saved at (struct UserInfo) p */
+    p->purchase = tmp_array[b].purchase;
+    p->Hash_id = hash_function(p->id,d->curBuckSize);
+    p->Hash_name = hash_function(p->name,d->curBuckSize);
+    p->next_id = tmp_id[p->Hash_id];
+    p->next_name = tmp_name[p->Hash_name];
+    if(p->Hash_name ==1734){
+
+    printf("The name:%s The HAsh: %d\n", p->name,p->Hash_name);
+    }
+    /*Add at head of the linked list*/
+    tmp_id[p->Hash_id] = p;
+    tmp_name[p->Hash_name] = p;
+
+  }
+  d->id_Table->pArray = tmp_id;
+  d->name_Table->pArray = tmp_name;
+ //  struct UserInfo *iter;
+ //  iter = tmp_array;
+ //  int i;
+ //  for(i = 0; i < d->curBuckSize;i++){
+ //    free(iter[i].id);
+ //    free(iter[i].name);
+ //  }
+ // printf("6\n");
+ //  free(iter);
+  free(tmp_array);
+  return 0;
+  
+
 }
 /*--------------------------------------------------------------------*/
 int
@@ -166,7 +238,14 @@ RegisterCustomer(DB_T d, const char *id,
 
 /*Table Expansion*/
   if(d->numItems >= 0.75*d->curBuckSize){
-    TableExpansion(d);
+    int pin;
+    pin = TableExpansion(d);
+    if(pin == -1){
+      fprintf(stderr, "Can't resize a Hash Table\n");
+      return -1;
+    }
+    h_id = hash_function(id,d->curBuckSize); h_name = hash_function(name,d->curBuckSize);
+    assert(d->numItems < 0.75*d->curBuckSize);
   }
 
   /*allocate memory for new UserInfo*/
@@ -192,10 +271,9 @@ RegisterCustomer(DB_T d, const char *id,
   /*Add at head of the linked list*/
   d->id_Table->pArray[h_id] = p;
   d->name_Table->pArray[h_name] = p;
-
+  // printf("The name:%s The HAsh: %d\n", p->name,p->Hash_name);
   /*Increment the number of item*/
   d->numItems +=1;
-
   return 0;
 }
 /*--------------------------------------------------------------------*/
@@ -231,7 +309,7 @@ UnregisterCustomerByID(DB_T d, const char *id)
       q->next_id = p->next_id;
     }
     else{//Bucket has only one linked list elements
-      d->id_Table->pArray[h] = NULL;
+      d->id_Table->pArray[h] = p->next_id;
     }    
   }
 
@@ -258,7 +336,7 @@ UnregisterCustomerByID(DB_T d, const char *id)
       m->next_name = l->next_name;
     }
     else{//Bucket has only one linked list elements
-      d->name_Table->pArray[p->Hash_name] = NULL;
+      d->name_Table->pArray[p->Hash_name] = l->next_name;
     }
   }
   /*Free the data*/
@@ -280,10 +358,12 @@ UnregisterCustomerByName(DB_T d, const char *name)
   struct UserInfo *q;
   q = NULL;
   int h = hash_function(name,d->curBuckSize);//Hash value for the given name
+  printf("The name:%s The HAsh: %d\n", name,h);
   int checker = 0;//checker for the name match
 
   /*Find the UserInfo which has an name*/
   for(p = d->name_Table->pArray[h]; p != NULL; p = p->next_name){
+    
     if(strcmp(p->name,name) == 0){//if name is founded, checker is 1 and break the for-loop
       checker =1;
       break;
@@ -292,6 +372,7 @@ UnregisterCustomerByName(DB_T d, const char *name)
   }
   /*checker is 0, means there is no such UserInfo*/
   if(checker != 1){
+    printf("%s WRONG!!!!!!\n", name);
     return -1;
   }
   /*checker is 1, means UserInfo do exist*/
@@ -300,7 +381,7 @@ UnregisterCustomerByName(DB_T d, const char *name)
       q->next_name = p->next_name;
     }
     else{//Bucket has only one linked list elements
-      d->name_Table->pArray[h] = NULL;
+      d->name_Table->pArray[h] = p->next_name;
     }  
   }
   
@@ -329,7 +410,7 @@ UnregisterCustomerByName(DB_T d, const char *name)
       m->next_id = l->next_id;
     }
     else{
-      d->id_Table->pArray[p->Hash_id] = NULL;
+      d->id_Table->pArray[p->Hash_id] = l->next_id;
     }  
   }
   
