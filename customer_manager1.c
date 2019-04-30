@@ -70,13 +70,13 @@ DestroyCustomerDB(DB_T d)
   if (d == NULL){
     return ;
   }
-  struct UserInfo *iter;
-  iter = d->pArray;
-  int i;
-  for(i = 0; i < d->numItems;i++){//? free upto where??
-    free(iter[i].id);
-    free(iter[i].name);
-  }
+  // struct UserInfo *iter;
+  // iter = d->pArray;
+  // int i;
+  // for(i = 0; i < d->numItems;i++){//? free upto where??
+  //   free(iter[i].id);
+  //   free(iter[i].name);
+  // }
  
   free(d->pArray);
   free(d);

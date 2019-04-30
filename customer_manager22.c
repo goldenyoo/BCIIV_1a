@@ -18,7 +18,8 @@
 
 enum {HASH_MULTIPLIER = 65599};
 enum {BUCKET_COUNT = 1024};
-#define UNIT_ARRAY_SIZE 1024
+// #define UNIT_ARRAY_SIZE 1024
+#define MAX_BUCKET_SIZE 1048576
 
 
 /* Return a hash code for pcKey that is between 0 and iBucketCount-1,
@@ -36,12 +37,13 @@ struct UserInfo{
   char *name;                // customer name
   char *id;                  // customer id
   int purchase;              // purchase amount (> 0)
-  int Hash_id;
-  int Hash_name;
+  int Hash_id;              // Hash value of id
+  int Hash_name;            // Hash value of name
 
-  struct UserInfo (*next_id);
+  // pointer that  pointing next UserInfo node in certain Hash Table for id
+  struct UserInfo (*next_id); 
+  // pointer that  pointing next UserInfo node in certain Hash Table for name
   struct UserInfo (*next_name);
-
 };
 
 struct DB {
@@ -55,24 +57,17 @@ struct DB {
 };
 
 struct Table{
-  struct UserInfo **pArray;
+  struct UserInfo **pArray;// double pointer that points UserInfo *
+                              // To freely resize the Hash Table, implemented as double pointer
 };
-
-// struct Table *Table_create(void){
-//   struct Table *t;
-//   t = calloc(1,sizeof(struct Table));
-//   return t;
-// }
-
 
 /*--------------------------------------------------------------------*/
 DB_T
 CreateCustomerDB(void)
 {
-   
   DB_T d;
-  
-  d = (DB_T) calloc(1, sizeof(struct DB));
+  d = (DB_T) calloc(1, sizeof(struct DB));//allocate memory
+
   /*Verify d pointer*/
   if (d == NULL) {
     fprintf(stderr, "Can't allocate a memory for DB_T\n");
@@ -117,6 +112,7 @@ DestroyCustomerDB(DB_T d)
   int b;
   struct UserInfo *p, *nextp;
   struct Table *t_id, *t_name;
+
   /*t_id, t_name is Hash Table for id and name*/
   t_id = d->id_Table; t_name = d->name_Table;
 
@@ -135,14 +131,30 @@ DestroyCustomerDB(DB_T d)
   return ;
 }
 /*--------------------------------------------------------------------*/
+
+/************************************************************************/
+/*TableExpansion(): From the parameter d, this fuction performs 
+  Hash Table expansion. 
+    1. Save all the data in d at single tmp_array 
+      - similiar to array list implemented at customer_manager1.c
+    2. Realloc the Hash Table according to the new bucket size
+      
+    3. From tmp_array, reaarange all the data to new Hash Table with 
+      new hash value   
+
+    4. Free tmp_array                                                  */
+/************************************************************************/
 int TableExpansion(DB_T d){
   
   int b;
   struct UserInfo *k;
   struct UserInfo *nextk;
   struct UserInfo *tmp_array;
+
+  /*Make an single array for temporally save the UserInfo data*/
   tmp_array = calloc(d->numItems,sizeof(struct UserInfo));
   int index = 0;
+  /*For all data in the Hash Table are saved at tmp_array[]*/
   for(b = 0; b < d->curBuckSize; b++){
     for(k=d->id_Table->pArray[b];k!=NULL;k = nextk){
       nextk=k->next_id;
@@ -152,21 +164,30 @@ int TableExpansion(DB_T d){
       index++;
     }
   }
+
+  /*Double the bucksize*/
   d->curBuckSize *= 2;
+
   struct UserInfo **tmp_id;
   struct UserInfo **tmp_name;
-
+  /*realloc the Hash Table therefore contains the double bucksize*/
   tmp_id = realloc(d->id_Table->pArray,sizeof(struct UserInfo *)*(d->curBuckSize));
   tmp_name = realloc(d->name_Table->pArray,sizeof(struct UserInfo *)*(d->curBuckSize));
-  if(tmp_id == NULL || tmp_name == NULL){
-    fprintf(stderr, "Can't resize a Hash Table\n");
+  if(tmp_id == NULL || tmp_name == NULL){//validate the realloc result
+    fprintf(stderr, "Can't realloc a Hash Table\n");
     return -1;
   }
+  /*Initialize the reallocated Hash Table array to NULL*/
   for(b=0;b<d->curBuckSize;b++){
+    for(k = tmp_id[b]; k != NULL; k = nextk){
+      nextk = k->next_id;
+      free(k);
+    }
     tmp_id[b] = NULL;
     tmp_name[b] = NULL;
   }
 
+  /*From tmp_array that contains all UserInfo data, we rearrange data to tmp_id, tmp_name*/
   for(b = 0; b < d->numItems; b++){
     struct UserInfo *p = calloc(1, sizeof(struct UserInfo));
     /*verify the pointer p*/
@@ -186,30 +207,20 @@ int TableExpansion(DB_T d){
     p->Hash_name = hash_function(p->name,d->curBuckSize);
     p->next_id = tmp_id[p->Hash_id];
     p->next_name = tmp_name[p->Hash_name];
-    if(p->Hash_name ==1734){
-
-    printf("The name:%s The HAsh: %d\n", p->name,p->Hash_name);
-    }
+    
     /*Add at head of the linked list*/
     tmp_id[p->Hash_id] = p;
     tmp_name[p->Hash_name] = p;
 
   }
+
   d->id_Table->pArray = tmp_id;
   d->name_Table->pArray = tmp_name;
- //  struct UserInfo *iter;
- //  iter = tmp_array;
- //  int i;
- //  for(i = 0; i < d->curBuckSize;i++){
- //    free(iter[i].id);
- //    free(iter[i].name);
- //  }
- // printf("6\n");
- //  free(iter);
-  free(tmp_array);
-  return 0;
   
+  /*Free tmp_array[]*/
+  free(tmp_array);
 
+  return 0;
 }
 /*--------------------------------------------------------------------*/
 int
@@ -237,7 +248,7 @@ RegisterCustomer(DB_T d, const char *id,
 }
 
 /*Table Expansion*/
-  if(d->numItems >= 0.75*d->curBuckSize){
+  if(d->curBuckSize < MAX_BUCKET_SIZE &&d->numItems >= 0.75*d->curBuckSize ){
     int pin;
     pin = TableExpansion(d);
     if(pin == -1){
@@ -271,7 +282,7 @@ RegisterCustomer(DB_T d, const char *id,
   /*Add at head of the linked list*/
   d->id_Table->pArray[h_id] = p;
   d->name_Table->pArray[h_name] = p;
-  // printf("The name:%s The HAsh: %d\n", p->name,p->Hash_name);
+
   /*Increment the number of item*/
   d->numItems +=1;
   return 0;
@@ -305,10 +316,10 @@ UnregisterCustomerByID(DB_T d, const char *id)
   }
   /*checker is 1, means UserInfo do exist*/
   else{
-    if(q != NULL){ //Bucket has more than one linked list elements
+    if(q != NULL){ 
       q->next_id = p->next_id;
     }
-    else{//Bucket has only one linked list elements
+    else{//first element of the bucket has been removed
       d->id_Table->pArray[h] = p->next_id;
     }    
   }
@@ -332,10 +343,10 @@ UnregisterCustomerByID(DB_T d, const char *id)
   }
   /*checker is 1, means UserInfo do exist*/
   else{
-    if(m != NULL){//Bucket has more than one linked list elements
+    if(m != NULL){
       m->next_name = l->next_name;
     }
-    else{//Bucket has only one linked list elements
+    else{//first element of the bucket has been removed
       d->name_Table->pArray[p->Hash_name] = l->next_name;
     }
   }
@@ -358,7 +369,6 @@ UnregisterCustomerByName(DB_T d, const char *name)
   struct UserInfo *q;
   q = NULL;
   int h = hash_function(name,d->curBuckSize);//Hash value for the given name
-  printf("The name:%s The HAsh: %d\n", name,h);
   int checker = 0;//checker for the name match
 
   /*Find the UserInfo which has an name*/
@@ -372,15 +382,14 @@ UnregisterCustomerByName(DB_T d, const char *name)
   }
   /*checker is 0, means there is no such UserInfo*/
   if(checker != 1){
-    printf("%s WRONG!!!!!!\n", name);
     return -1;
   }
   /*checker is 1, means UserInfo do exist*/
   else{
-    if(q != NULL){//Bucket has more than one linked list elements
+    if(q != NULL){
       q->next_name = p->next_name;
     }
-    else{//Bucket has only one linked list elements
+    else{//first element of the bucket has been removed
       d->name_Table->pArray[h] = p->next_name;
     }  
   }
@@ -409,7 +418,7 @@ UnregisterCustomerByName(DB_T d, const char *name)
     if(m != NULL){
       m->next_id = l->next_id;
     }
-    else{
+    else{//first element of the bucket has been removed
       d->id_Table->pArray[p->Hash_id] = l->next_id;
     }  
   }
