@@ -176,6 +176,13 @@ input:
 	movb (%eax), %cl
 	cmp %ecx, %ebx
 	je is_r
+
+	# buffer[0] == '_'
+	movl $0, %ecx
+	movl $underbar, %eax
+	movb (%eax), %cl
+	cmp %ecx, %ebx
+	je is_underbar
 	
 	jmp quit
 
@@ -294,6 +301,8 @@ is_modulus:
 
 	jmp input
 
+
+
 is_f_before:
 	cmpl %esp, %ebp
 	je is_empty
@@ -315,13 +324,27 @@ is_f:
 	jmp is_f
 
 is_c:
-	movl    %ebp, %esp
+	movl %ebp, %esp
 	jmp input
 
 is_d:
+	cmpl %esp, %ebp
+	je is_empty
+
+	movl (%esp), %eax
+	pushl %eax
 	jmp input
 
 is_r:
+	cmpl %esp, %ebp
+	je is_empty
+
+	popl %ebx
+	popl %eax
+
+	pushl %ebx
+	pushl %eax
+
 	jmp input
 
 is_digit:
@@ -334,6 +357,21 @@ is_digit:
 
 	jmp input
 
+is_underbar:
+	movl $buffer, %eax
+	movl $0, %ebx
+	movw (%eax), %bx
+
+	movl $0, %edx
+	movb (%ebx), %dl
+
+	pushl %edx
+	call atoi
+	addl $4, %esp
+
+	pushl %eax
+
+	jmp input
 
 is_incomplete:
 	pushl %eax
