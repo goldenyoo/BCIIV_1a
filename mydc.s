@@ -172,7 +172,6 @@ input:
 	movl $f, %eax
 	movb (%eax), %cl
 	cmp %ecx, %ebx
-	movl %esp, %ecx
 	je is_f_before
 
 	# This part checks if the first letter of buffer is 'c'
@@ -217,12 +216,17 @@ input:
 # If stack do has operand, print it.
 # ----------------------------------------------------------------------------------------
 is_p:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	# Push parameters of the function
 	pushl (%esp)
 	pushl $printfFormat
+
+	# Call fucntion
 	call printf
+
+	#Restore the size of stack
 	addl $OFFSET_8, %esp
 
 	jmp input
@@ -234,21 +238,27 @@ is_p:
 # using two operand, perform plus and push the value to stack.
 # ----------------------------------------------------------------------------------------
 is_plus:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
 	addl $OFFSET_4, %esp
 
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack has only one operand
 	je is_incomplete
 
+	#Save the value at EBX and resize the stack
 	movl (%esp), %ebx
 	addl $OFFSET_4, %esp
 
+	#Add operation
 	addl %ebx, %eax
+
+	#Push the value to stack
 	pushl %eax
 
+	#Go back to starting point, 'input'
 	jmp input
 
 
@@ -259,21 +269,27 @@ is_plus:
 # using two operand, perform subtraction and push the value to stack.
 # ----------------------------------------------------------------------------------------
 is_minus:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
 	addl $OFFSET_4, %esp
 
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack has only one operand
 	je is_incomplete
 
+	#Save the value at EBX and resize the stack
 	movl (%esp), %ebx
 	addl $OFFSET_4, %esp
 
+	#Subtract operation
 	subl %eax, %ebx
+	
+	#Push the value to stack
 	pushl %ebx
 
+	#Go back to starting point, 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -283,22 +299,27 @@ is_minus:
 # using two operand, perform multiplication and push the value to stack.
 # ----------------------------------------------------------------------------------------
 is_multiply:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
 	addl $OFFSET_4, %esp
 
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack has only one operand
 	je is_incomplete
 
+	#Save the value at EBX and resize the stack
 	movl (%esp), %ebx
 	addl $OFFSET_4, %esp
 
+	#Multiplaction
 	imul %ebx
 
+	#Push the value to stack
 	pushl %eax
 
+	#Go back to starting point, 'input'
 	jmp input
 
 
@@ -309,24 +330,29 @@ is_multiply:
 # using two operand, perform division and push the value to stack.
 # ----------------------------------------------------------------------------------------
 is_division:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at EBX and resize the stack
 	movl (%esp), %ebx
 	addl $OFFSET_4, %esp
 
-	cmpl %esp, %ebp
+
+	cmpl %esp, %ebp # Check stack has only one operand
 	je is_incomplete
 
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
 	CDQ
 	addl $OFFSET_4, %esp
 
-
+	# Division
 	idiv %ebx
 
+	#Push the value to stack
 	pushl %eax
 
+	#Go back to starting point, 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -336,23 +362,28 @@ is_division:
 # using two operand, perform modulus operation and push the value to stack.
 # ----------------------------------------------------------------------------------------
 is_modulus:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at EBX and resize the stack
 	movl (%esp), %ebx
 	addl $OFFSET_4, %esp
 
 	cmpl %esp, %ebp
-	je is_incomplete
+	je is_incomplete # Check stack has only one operand
 
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
-	CDQ
+	CDQ #sign flag
 	addl $OFFSET_4, %esp
 
+	#Division
 	idiv %ebx
 
+	#push the value of remainder to stack
 	pushl %edx
 
+	#Go back to starting point, 'input'
 	jmp input
 
 
@@ -363,41 +394,61 @@ is_modulus:
 # go to 'expo_fuction'.
 # ----------------------------------------------------------------------------------------
 is_exponent:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save the value at ECX and resize the stack
 	movl (%esp), %ecx
 	addl $OFFSET_4, %esp
 
+	cmpl %esp, %ebp
+	je is_incomplete # Check stack has only one operand
+
+	#If the ECX is '1', we don't have to do further consideration.
+	# ex) X^(1) = X
 	cmpl $1, %ecx
 	je input
 
-	cmpl %esp, %ebp
-	je is_incomplete
-
+	#Save the value at EAX and resize the stack
 	movl (%esp), %eax
 	addl $OFFSET_4, %esp
 
+	#Temporarly save ECX at stack
 	pushl %ecx
+
+	#Register initialization
 	movl $1, %ecx
 	movl %eax, %ebx
-	jmp expo_fuction
+
+	#Go to 'expo_fuction'
+	jmp expo_function
 
 # ----------------------------------------------------------------------------------------
 # expo_function:
 # Using two operand, perform exponential operation and push the value to stack.
+# From 'is_exponent', EAX has number value and (%esp) has how many times do we have to 
+# do multiplication. ex) 2^(4) -> EAX: 2, (%esp): 4
+# Every time we visit 'expo_function', increment ECX. If ECX become equal to (%esp), 
+# we stop the multiplication and go to 'input'
 # ----------------------------------------------------------------------------------------
 expo_function:
+	#Multiplication
 	imul %ebx
 
+	#Increment ECX
 	incl %ecx
 
+	#Compare ECX and (%ESP)
 	cmpl (%esp), %ecx
-	jne expo_fuction
+	jne expo_function #Go back to 'expo_function'
 
+	#Remove the value that temporarly saved during 'is_exponent' 
 	addl $OFFSET_4, %esp
 
+	#push the value to stack
 	pushl %eax
+
+	#Go back to starting point, 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -406,9 +457,13 @@ expo_function:
 # If stack is empty, go to 'is_empty'. Else go to 'is_f'
 # ----------------------------------------------------------------------------------------
 is_f_before:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp # Check stack is empty
 	je is_empty
 
+	#Save current ESP at ECX
+	movl %esp, %ecx
+
+	#Go to 'is_f'
 	jmp is_f
 
 # ----------------------------------------------------------------------------------------
@@ -416,17 +471,30 @@ is_f_before:
 # Print the contents of the stack in LIFO order.
 # ----------------------------------------------------------------------------------------
 is_f:
-	cmpl  %ecx, %ebp
-	jle input
+	#Stop repetition when ECX become same with EBP
+	cmpl %ecx, %ebp
+	je input
 
+	#Push the variable value to stack
 	pushl %ecx
+
+	# Push parameters of the function
 	pushl (%ecx)
 	pushl $printfFormat
+
+	#Call function
 	call printf
+
+	#Restore the size of stack
 	addl $OFFSET_8, %esp
+
+	#Pop ECX
 	popl %ecx
 
+	#Decrement ECX according to stack offset
 	addl $OFFSET_4, %ecx
+
+	#Repeat the process
 	jmp is_f
 
 # ----------------------------------------------------------------------------------------
@@ -434,7 +502,10 @@ is_f:
 # Clears the contents of the stack.
 # ----------------------------------------------------------------------------------------
 is_c:
+	#Equalize ESP to EBP
 	movl %ebp, %esp
+
+	#Go back to starting point 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -442,11 +513,16 @@ is_c:
 # Duplicates the top-most entry.
 # ----------------------------------------------------------------------------------------
 is_d:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp #Check stack is empty or not
 	je is_empty
 
+	#Make a duplicate
 	movl (%esp), %eax
+	
+	#Push the value to stack
 	pushl %eax
+
+	#Go back to starting point 'input'
 	jmp input
 
 
@@ -455,15 +531,18 @@ is_d:
 # Reverses the order of the top two values on the stack.
 # ----------------------------------------------------------------------------------------
 is_r:
-	cmpl %esp, %ebp
+	cmpl %esp, %ebp #Check stack is empty or not
 	je is_empty
 
+	#Pop two operand from the stack
 	popl %ebx
 	popl %eax
 
+	#Push two value to stack with reversed order
 	pushl %ebx
 	pushl %eax
 
+	#Go back to starting point 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -472,13 +551,22 @@ is_r:
 # After 'atoi', push the value to stack
 # ----------------------------------------------------------------------------------------
 is_digit:
+
 	movl $buffer,%ebx
+
+	#Push parameters to the stack
 	pushl %ebx
+
+	#Call function
 	call atoi
+
+	#Restore the size of stack
 	addl $OFFSET_4, %esp
 
+	#Push the value to stack
 	pushl %eax
 
+	#Go back to starting point 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -490,13 +578,22 @@ is_underbar:
 	movl $buffer, %eax
 	incl %eax
 
+	#Push parameters to the stack
 	pushl %eax
+
+	#Call function
 	call atoi
+
+	#Restore the size of stack
 	addl $OFFSET_4, %esp
 
+	#Convert the value negatively
 	negl %eax
+
+	#Push the value to stack
 	pushl %eax
 
+	#Go back to starting point 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -505,12 +602,19 @@ is_underbar:
 # Before print out error message, we have to push back the operand to stack.
 # ----------------------------------------------------------------------------------------
 is_incomplete:
+	#Re-save the value 
 	pushl %eax
 
+	#Push parameters to stack
 	pushl $emptyErrorMSg
+
+	#Call function
 	call printf
+
+	#Restore the stack size
 	addl $OFFSET_4, %esp
 
+	#Go back to starting point 'input'
 	jmp input
 
 # ----------------------------------------------------------------------------------------
@@ -518,10 +622,16 @@ is_incomplete:
 # stack has no operand. Therefore printing out error message to standard output.
 # ----------------------------------------------------------------------------------------
 is_empty:
+	#Push parameters to stack
 	pushl $emptyErrorMSg
+
+	#Call function
 	call printf
+
+	#Restore the stack size
 	addl $OFFSET_4, %esp
-	
+
+	#Go back to starting point 'input'
 	jmp input
 
 quit:	
