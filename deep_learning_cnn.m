@@ -86,20 +86,21 @@ end
 YTest = categorical(YTest);
 
 %%
+%
 inputSize = 53;
-numHiddenUnits = 53;
+numHiddenUnits = 60; %%%%%%%%%%%%%% Change hidden unit number
 numClasses = 2;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    bilstmLayer(numHiddenUnits,'OutputMode','last','InputWeightsL2Factor',1)
-    dropoutLayer(0.2)
+    bilstmLayer(numHiddenUnits,'OutputMode','last')
+%     dropoutLayer(0.2)
     fullyConnectedLayer(numClasses)
     softmaxLayer
-    classificationLayer];
+    classificationLayer]; % Can Add: InputWeightsLearnRateFactor, RecurrentWeightsLearnRateFactor, BiasLearnRateFactor, InputWeightsL2Factor
 
 maxEpochs = 100;
-miniBatchSize = 351;
+miniBatchSize = 351; %%%%%%%%%%%%%% Change BatchSize -> our data is already chunked
 
 options = trainingOptions('adam', ...
     'ExecutionEnvironment','auto', ...
@@ -107,11 +108,15 @@ options = trainingOptions('adam', ...
     'MaxEpochs',maxEpochs, ...
     'MiniBatchSize',miniBatchSize, ...
     'SequenceLength','longest', ...
-    'Shuffle','every-epoch', ...
+    'Shuffle','never', ...   % "once', 'never', 'every-epoch'
     'ValidationData',{XTest,YTest}, ...
     'ValidationFrequency',10, ...
     'Verbose',0, ...
     'Plots','training-progress');
+    
+%'LearnRateSchedule','piecewise', ...
+    %'LearnRateDropPeriod',10, ...
+
 
 net = trainNetwork(XTrain,YTrain,layers,options);
 %% 
@@ -120,6 +125,6 @@ YPred = classify(net,XTest, ...
     'SequenceLength','longest');
 
 acc = sum(YPred == YTest)./numel(YTest);
-err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
+ err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
  
  disp(sprintf('Score: %f   MSE: %f',acc,err));
