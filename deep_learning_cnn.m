@@ -2,7 +2,7 @@
 %    File_name: deep_learning_cnn.m
 %    Programmer: Seungjae Yoo                             
 %                                           
-%    Last Modified: 2020_01_23                            
+%    Last Modified: 2020_01_13                            
 %                                                            
  % ----------------------------------------------------------------------- %
  %% Call raw data
@@ -13,7 +13,7 @@ clear all
 prompt = {'Data label: ','train test split ratio: '};
 dlgtitle = 'Input';
 dims = [1 50];
-definput = {'a','0.9'};
+definput = {'a','0.8'};
 answer = inputdlg(prompt,dlgtitle,dims,definput);
 
 
@@ -73,7 +73,7 @@ YTest = categorical(YTest);
 
 %%
 inputSize = 53;
-numHiddenUnits = 100;
+numHiddenUnits = 60; %%%%%%%%%%%%%% Change hidden unit number
 numClasses = 2;
 
 layers = [ ...
@@ -82,10 +82,10 @@ layers = [ ...
 %     dropoutLayer(0.2)
     fullyConnectedLayer(numClasses)
     softmaxLayer
-    classificationLayer];
+    classificationLayer]; % Can Add: InputWeightsLearnRateFactor, RecurrentWeightsLearnRateFactor, BiasLearnRateFactor, InputWeightsL2Factor
 
 maxEpochs = 100;
-miniBatchSize = 27;
+miniBatchSize = 351; %%%%%%%%%%%%%% Change BatchSize -> our data is already chunked
 
 options = trainingOptions('adam', ...
     'ExecutionEnvironment','auto', ...
@@ -93,11 +93,15 @@ options = trainingOptions('adam', ...
     'MaxEpochs',maxEpochs, ...
     'MiniBatchSize',miniBatchSize, ...
     'SequenceLength','longest', ...
-    'Shuffle','every-epoch', ...
+    'Shuffle','never', ...   % "once', 'never', 'every-epoch'
     'ValidationData',{XTest,YTest}, ...
-    'ValidationFrequency',30, ...
+    'ValidationFrequency',10, ...
     'Verbose',0, ...
     'Plots','training-progress');
+    
+%'LearnRateSchedule','piecewise', ...
+    %'LearnRateDropPeriod',10, ...
+
 
 net = trainNetwork(XTrain,YTrain,layers,options);
 %% 
