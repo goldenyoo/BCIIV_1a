@@ -35,6 +35,19 @@ cnt = cnt';
 
 % Exclude electrode (AF3, AF4, O1, O2, PO1, PO2)
 cnt_c = cnt(3:55,:);
+
+%%% Re-referening
+% difference to right ear electrode
+for i = 1 : length(cnt_c)
+    cnt_c(:,i) = cnt_c(:,i) - cnt(33,i) * ones(size(cnt_c,1),1);
+end
+
+% common average
+Means = mean(cnt_c);
+for i = 1: length(Means)
+    cnt_c(:,i) = cnt_c(:,i) - Means(1,i)*ones(size(cnt_c,1),1);
+end
+
 %% 
 %train test split
 a = 1; b = 1;
