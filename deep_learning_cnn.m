@@ -2,7 +2,7 @@
 %    File_name: deep_learning_cnn.m
 %    Programmer: Seungjae Yoo                             
 %                                           
-%    Last Modified: 2020_01_08                            
+%    Last Modified: 2020_01_23                            
 %                                                            
  % ----------------------------------------------------------------------- %
  %% Call raw data
