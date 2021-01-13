@@ -2,7 +2,7 @@
 %    File_name: deep_learning_cnn.m
 %    Programmer: Seungjae Yoo                             
 %                                           
-%    Last Modified: 2020_01_23                            
+%    Last Modified: 2020_01_13                            
 %                                                            
  % ----------------------------------------------------------------------- %
  %% Call raw data
@@ -13,7 +13,7 @@ clear all
 prompt = {'Data label: ','train test split ratio: '};
 dlgtitle = 'Input';
 dims = [1 50];
-definput = {'a','0.9'};
+definput = {'a','0.8'};
 answer = inputdlg(prompt,dlgtitle,dims,definput);
 
 
@@ -28,6 +28,7 @@ train_test_ratio = double(string(answer(2,1))); % train_test_split ratio
 % Load file
 FILENAME = strcat('C:\Users\유승재\Desktop\Motor Imagery EEG data\BCICIV_1_mat\BCICIV_calib_ds1',data_label,'.mat');
 load(FILENAME);
+%% 
 
 % Data rescale
 cnt= 0.1*double(cnt);
@@ -37,16 +38,16 @@ cnt = cnt';
 cnt_c = cnt(3:55,:);
 
 %%% Re-referening
-% difference to right ear electrode
-for i = 1 : length(cnt_c)
-    cnt_c(:,i) = cnt_c(:,i) - cnt(33,i) * ones(size(cnt_c,1),1);
-end
-
-% common average
-Means = mean(cnt_c);
-for i = 1: length(Means)
-    cnt_c(:,i) = cnt_c(:,i) - Means(1,i)*ones(size(cnt_c,1),1);
-end
+% % difference to right ear electrode
+% for i = 1 : length(cnt_c)
+%     cnt_c(:,i) = cnt_c(:,i) - cnt(33,i) * ones(size(cnt_c,1),1);
+% end
+% 
+% % common average
+% Means = mean(cnt_c);
+% for i = 1: length(Means)
+%     cnt_c(:,i) = cnt_c(:,i) - Means(1,i)*ones(size(cnt_c,1),1);
+% end
 
 %% 
 %train test split
@@ -63,13 +64,13 @@ for j = 1:k
     
     XTrain(j,1) = {E};    
     YTrain(j,1) = mrk.y(1,i);
-    if mrk.y(1,i) == 1 
-       
+    
+    if mrk.y(1,i) == 1        
         a = a+1;
-    else
-       
+    else       
         b = b+1;
     end
+    
 end
 YTrain = categorical(YTrain);
 
@@ -86,19 +87,19 @@ YTest = categorical(YTest);
 
 %%
 inputSize = 53;
-numHiddenUnits = 100;
+numHiddenUnits = 53;
 numClasses = 2;
 
 layers = [ ...
     sequenceInputLayer(inputSize)
-    bilstmLayer(numHiddenUnits,'OutputMode','last')
-%     dropoutLayer(0.2)
+    bilstmLayer(numHiddenUnits,'OutputMode','last','InputWeightsL2Factor',1)
+    dropoutLayer(0.2)
     fullyConnectedLayer(numClasses)
     softmaxLayer
     classificationLayer];
 
 maxEpochs = 100;
-miniBatchSize = 27;
+miniBatchSize = 351;
 
 options = trainingOptions('adam', ...
     'ExecutionEnvironment','auto', ...
@@ -108,7 +109,7 @@ options = trainingOptions('adam', ...
     'SequenceLength','longest', ...
     'Shuffle','every-epoch', ...
     'ValidationData',{XTest,YTest}, ...
-    'ValidationFrequency',30, ...
+    'ValidationFrequency',10, ...
     'Verbose',0, ...
     'Plots','training-progress');
 
@@ -119,6 +120,6 @@ YPred = classify(net,XTest, ...
     'SequenceLength','longest');
 
 acc = sum(YPred == YTest)./numel(YTest);
- err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
+err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
  
  disp(sprintf('Score: %f   MSE: %f',acc,err));
