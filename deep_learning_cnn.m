@@ -34,15 +34,9 @@ cnt= 0.1*double(cnt);
 cnt = cnt';
 
 % Only include MI related electrode 
-cnt_c = [cnt(10:16,:); cnt(26:32,:); cnt(42:48,:)];
+% cnt_c = [cnt(10:16,:); cnt(26:32,:); cnt(42:48,:)];
+cnt_c = [cnt(26,:);cnt(27,:); cnt(31,:); cnt(32,:)];
 
-% Z-score normalization
-m = mean(cnt_c,2);
-sigma = std(cnt_c,0,2);
-for i = 1: size(cnt_c,1)
-    cnt_c(i,:) = cnt_c(i,:) - m(i)*ones(1,size(cnt_c,2));
-    cnt_c(i,:) = cnt_c(i,:)./sigma(i);
-end
 
 
 % %% Re-referening
@@ -56,6 +50,15 @@ end
 % for i = 1: length(Means)
 %     cnt_c(:,i) = cnt_c(:,i) - Means(1,i)*ones(size(cnt_c,1),1);
 % end
+% 
+% % Z-score normalization
+% m = mean(cnt_c,2);
+% sigma = std(cnt_c,0,2);
+% for i = 1: size(cnt_c,1)
+%     cnt_c(i,:) = cnt_c(i,:) - m(i)*ones(1,size(cnt_c,2));
+%     cnt_c(i,:) = cnt_c(i,:)./sigma(i);
+% end
+
 
 %% 
 %train test split
@@ -94,8 +97,8 @@ end
 YTest = categorical(YTest);
 
 %%
-inputSize = 21;
-numHiddenUnits = 30; %%%%%%%%%%%%%% Change hidden unit number
+inputSize = size(cnt_c,1); %%%%%%%%%%%%%%%%%% same with electrode number
+numHiddenUnits = 200; %%%%%%%%%%%%%% Change hidden unit number
 numClasses = 2;
 
 layers = [ ...
