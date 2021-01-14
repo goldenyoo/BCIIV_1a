@@ -33,8 +33,8 @@ load(FILENAME);
 cnt= 0.1*double(cnt);
 cnt = cnt';
 
-% Exclude electrode (AF3, AF4, O1, O2, PO1, PO2)
-cnt_c = cnt(3:55,:);
+% Only include MI related electrode 
+cnt_c = [cnt(10:16,:); cnt(26:32,:); cnt(42:48,:)];
 %% 
 %train test split
 a = 1; b = 1;
@@ -72,8 +72,8 @@ end
 YTest = categorical(YTest);
 
 %%
-inputSize = 53;
-numHiddenUnits = 60; %%%%%%%%%%%%%% Change hidden unit number
+inputSize = 21;
+numHiddenUnits = 50; %%%%%%%%%%%%%% Change hidden unit number
 numClasses = 2;
 
 layers = [ ...
