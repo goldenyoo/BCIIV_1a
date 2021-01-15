@@ -34,8 +34,8 @@ cnt= 0.1*double(cnt);
 cnt = cnt';
 
 % Only include MI related electrode 
-% cnt_c = [cnt(10:16,:); cnt(26:32,:); cnt(42:48,:)];
-cnt_c = [cnt(26,:);cnt(27,:); cnt(31,:); cnt(32,:)];
+cnt_c = [cnt(10:16,:); cnt(26:32,:); cnt(42:48,:)];
+% cnt_c = [cnt(26,:);cnt(27,:); cnt(31,:); cnt(32,:)];
 
 
 
@@ -98,7 +98,7 @@ YTest = categorical(YTest);
 
 %%
 inputSize = size(cnt_c,1); %%%%%%%%%%%%%%%%%% same with electrode number
-numHiddenUnits = 200; %%%%%%%%%%%%%% Change hidden unit number
+numHiddenUnits = 100; %%%%%%%%%%%%%% Change hidden unit number
 numClasses = 2;
 
 layers = [ ...
