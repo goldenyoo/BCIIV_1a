@@ -205,10 +205,9 @@ options = trainingOptions('adam', ...
 net = trainNetwork(XTrain,YTrain,layers,options);
 %% 
 YPred = classify(net,XTest, ...
-    'MiniBatchSize',miniBatchSize, ...
     'SequenceLength','longest');
 
 acc = sum(YPred == YTest)./numel(YTest);
- err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
+err = immse(str2num(char(YPred(:))), str2num(char(YTest(:))));
  
  disp(sprintf('Score: %f   MSE: %f',acc,err));
